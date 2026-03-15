@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDETAI – Software Development Engineer in Test AI Institute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f6ff;
+  --bg2: #e4eeff;
+  --blue1: #0ea5e9;
+  --blue2: #0284c7;
+  --blue3: #0369a1;
+  --indigo: #4f46e5;
+  --text: #0f1e35;
+  --text2: #3a5270;
+  --text3: #7a9ab8;
+  --border: rgba(14,165,233,0.15);
+  --border2: rgba(14,165,233,0.35);
+  --shadow: 0 20px 60px rgba(14,165,233,0.15);
+  --shadow2: 0 8px 30px rgba(14,165,233,0.12);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;backdrop-filter:blur(20px) saturate(180%);background:rgba(240,246,255,0.88);border-bottom:1px solid var(--border);box-shadow:0 4px 24px rgba(14,165,233,0.08)}
+.nav-logo{font-family:var(--serif);font-size:1.6rem;color:var(--blue2);text-decoration:none;letter-spacing:-0.5px}
+.nav-logo span{color:var(--indigo)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:0.875rem;font-weight:500;transition:color 0.2s}
+.nav-links a:hover{color:var(--blue2)}
+.nav-cta{background:linear-gradient(135deg,var(--blue1),var(--blue2));color:#fff!important;padding:0.5rem 1.3rem;border-radius:8px;font-weight:600!important;box-shadow:0 4px 15px rgba(14,165,233,0.35);transition:box-shadow 0.2s,transform 0.2s!important}
+.nav-cta:hover{box-shadow:0 6px 25px rgba(14,165,233,0.5)!important;transform:translateY(-1px)!important}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 5rem;z-index:1;overflow:hidden}
+.orb{position:absolute;border-radius:50%;pointer-events:none;animation:floatOrb linear infinite}
+.orb1{width:420px;height:420px;top:-80px;right:-100px;background:radial-gradient(circle at 35% 35%,#bfecff,#7dd3fc 40%,#0ea5e9 70%,#0369a1);opacity:0.22;animation-duration:18s;filter:blur(1px)}
+.orb2{width:280px;height:280px;bottom:10%;left:-60px;background:radial-gradient(circle at 40% 30%,#e0f2fe,#7dd3fc 50%,#4f46e5);opacity:0.18;animation-duration:24s;animation-direction:reverse;filter:blur(2px)}
+.orb3{width:160px;height:160px;top:30%;left:10%;background:radial-gradient(circle at 30% 30%,#f0f9ff,#38bdf8 60%,#0284c7);opacity:0.3;animation-duration:15s}
+@keyframes floatOrb{0%{transform:translateY(0) rotate(0deg) scale(1)}33%{transform:translateY(-30px) rotate(120deg) scale(1.05)}66%{transform:translateY(15px) rotate(240deg) scale(0.97)}100%{transform:translateY(0) rotate(360deg) scale(1)}}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(14,165,233,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(14,165,233,0.05) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,0.1);border:1px solid rgba(14,165,233,0.28);color:var(--blue2);font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.45rem 1.1rem;border-radius:100px;margin-bottom:1.5rem;animation:fadeUp 0.7s ease both;box-shadow:0 2px 12px rgba(14,165,233,0.12)}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--blue1);animation:pulseDot 2s infinite}
+@keyframes pulseDot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:0.6}}
+.hero h1{font-family:var(--serif);font-size:clamp(2.8rem,7vw,5.5rem);line-height:1.06;letter-spacing:-2px;margin-bottom:1.5rem;animation:fadeUp 0.7s 0.1s ease both;color:var(--text)}
+.hero h1 em{font-style:italic;background:linear-gradient(135deg,var(--blue1),var(--indigo));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.1rem;color:var(--text2);max-width:560px;margin:0 auto 2.5rem;font-weight:400;animation:fadeUp 0.7s 0.2s ease both}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeUp 0.7s 0.3s ease both}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--blue1),var(--blue2));color:#fff;font-weight:600;font-size:0.9rem;padding:0.85rem 1.8rem;border-radius:10px;text-decoration:none;box-shadow:0 6px 25px rgba(14,165,233,0.4),inset 0 1px 0 rgba(255,255,255,0.2);transition:transform 0.2s,box-shadow 0.2s}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(14,165,233,0.5)}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--blue2);font-weight:600;font-size:0.9rem;padding:0.85rem 1.8rem;border-radius:10px;text-decoration:none;border:1.5px solid var(--border2);box-shadow:var(--shadow2);transition:transform 0.2s,box-shadow 0.2s}
+.btn-secondary:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.hero-stats{display:flex;gap:3rem;justify-content:center;margin-top:4rem;animation:fadeUp 0.7s 0.4s ease both}
+.hero-stat strong{display:block;font-size:2.2rem;font-family:var(--serif);font-weight:700;background:linear-gradient(135deg,var(--blue1),var(--blue3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-stat span{font-size:0.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;font-weight:500}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTIONS */
+section{position:relative;z-index:1;padding:5rem 2rem;max-width:1120px;margin:0 auto}
+.section-label{font-size:0.68rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--blue1);margin-bottom:0.6rem}
+.section-title{font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);letter-spacing:-1px;line-height:1.1;margin-bottom:0.8rem;color:var(--text)}
+.section-sub{color:var(--text2);font-weight:400;max-width:500px;margin-bottom:3rem;font-size:0.95rem}
+.divider{width:90%;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0 auto;position:relative;z-index:1}
+.card-3d{background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,var(--shadow2);transition:transform 0.3s ease,box-shadow 0.3s ease}
+.card-3d:hover{transform:translateY(-6px) rotateX(2deg);box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,0 20px 50px rgba(14,165,233,0.2)}
+
+/* COURSES */
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.25rem}
+.course-card{padding:1.75rem}
+.course-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#e0f2fe,#bae6fd);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;box-shadow:0 4px 12px rgba(14,165,233,0.2)}
+.course-card h3{font-size:1rem;font-weight:600;margin-bottom:0.5rem;color:var(--text)}
+.course-card p{font-size:0.85rem;color:var(--text2);line-height:1.65}
+.course-tag{display:inline-block;margin-top:1rem;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--blue2);background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);padding:0.25rem 0.65rem;border-radius:5px}
+
+/* WHY */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.1rem}
+.why-item{padding:1.5rem}
+.why-item .icon{font-size:1.6rem;margin-bottom:0.75rem}
+.why-item h4{font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text)}
+.why-item p{font-size:0.82rem;color:var(--text2)}
+
+/* TESTIMONIALS */
+.testimonials-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem}
+.testimonial-card{padding:1.5rem}
+.stars{color:#f59e0b;font-size:0.8rem;margin-bottom:0.75rem;letter-spacing:2px}
+.testimonial-card blockquote{font-size:0.875rem;color:var(--text2);font-style:italic;margin-bottom:1rem;line-height:1.75}
+.testimonial-author{display:flex;align-items:center;gap:10px}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--blue1),var(--indigo));display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;box-shadow:0 4px 12px rgba(14,165,233,0.3)}
+.testimonial-author strong{font-size:0.875rem;display:block;color:var(--text)}
+.testimonial-author span{font-size:0.75rem;color:var(--text3)}
+
+/* CONTACT WRAP */
+.contact-wrap{max-width:100%;background:linear-gradient(160deg,#dbeeff 0%,#e8f4ff 50%,#dbeeff 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;z-index:1;overflow:hidden}
+.contact-wrap::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,0.1),transparent 70%);pointer-events:none}
+.contact-inner{max-width:1120px;margin:0 auto;padding:5rem 2rem;display:grid;grid-template-columns:1fr 1.1fr;gap:4rem;align-items:start}
+.contact-info h2{font-family:var(--serif);font-size:2.4rem;letter-spacing:-1px;margin-bottom:0.6rem;line-height:1.1}
+.contact-info > p{color:var(--text2);font-size:0.95rem;margin-bottom:2rem;max-width:380px}
+
+/* TEAM CARDS */
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem}
+.team-card{background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);border:1px solid rgba(14,165,233,0.2);border-radius:14px;padding:1.1rem 1.2rem;box-shadow:0 4px 18px rgba(14,165,233,0.09);transition:transform 0.2s,box-shadow 0.2s;display:flex;flex-direction:column;gap:4px}
+.team-card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(14,165,233,0.2)}
+.team-card .role{font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue1)}
+.team-card .name{font-size:0.9rem;font-weight:700;color:var(--text)}
+.team-card .title-line{font-size:0.76rem;color:var(--text3);font-weight:500;margin-bottom:2px}
+.team-card a.email{font-size:0.74rem;color:var(--blue2);text-decoration:none;display:flex;align-items:center;gap:5px;word-break:break-all;margin-top:2px}
+.team-card a.email:hover{color:var(--blue3);text-decoration:underline}
+
+/* FORM */
+.contact-form{background:#fff;border:1px solid var(--border2);border-radius:20px;padding:2.25rem;box-shadow:0 1px 0 rgba(255,255,255,1) inset,0 25px 60px rgba(14,165,233,0.15)}
+.form-title{font-family:var(--serif);font-size:1.5rem;color:var(--text);margin-bottom:1.5rem;letter-spacing:-0.5px}
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--text2);margin-bottom:0.4rem;letter-spacing:0.03em;text-transform:uppercase}
+.form-group label .req{color:var(--blue1);margin-left:2px}
+.form-group input,.form-group textarea,.form-group select{width:100%;background:var(--bg);border:1.5px solid rgba(14,165,233,0.2);border-radius:10px;padding:0.75rem 1rem;color:var(--text);font-family:var(--sans);font-size:0.9rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue1);background:#fff;box-shadow:0 0 0 4px rgba(14,165,233,0.1)}
+.form-group textarea{resize:vertical;min-height:110px;line-height:1.6}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.submit-btn{width:100%;background:linear-gradient(135deg,var(--blue1),var(--blue2));color:#fff;font-family:var(--sans);font-weight:700;font-size:0.92rem;padding:0.9rem;border:none;border-radius:10px;cursor:pointer;box-shadow:0 6px 20px rgba(14,165,233,0.35),inset 0 1px 0 rgba(255,255,255,0.2);transition:transform 0.2s,box-shadow 0.2s;letter-spacing:0.02em}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(14,165,233,0.45)}
+.submit-btn:disabled{opacity:0.55;cursor:not-allowed;transform:none}
+.form-status{font-size:0.78rem;margin-top:0.75rem;text-align:center;color:var(--text3);min-height:1rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:#fff;border:1.5px solid rgba(14,165,233,0.35);border-radius:12px;padding:1rem 1.25rem;font-size:0.875rem;color:var(--text);z-index:999;box-shadow:0 12px 40px rgba(14,165,233,0.2);transform:translateY(120px);opacity:0;transition:transform 0.35s ease,opacity 0.35s ease;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{border-color:rgba(239,68,68,0.4)}
+.toast strong{display:block;margin-bottom:2px;color:var(--blue2)}
+.toast.error strong{color:#ef4444}
+
+/* FOOTER */
+footer{position:relative;z-index:1;text-align:center;padding:2.5rem 2rem;background:linear-gradient(180deg,var(--bg2),var(--bg));border-top:1px solid var(--border);color:var(--text3);font-size:0.8rem}
+footer a{color:var(--blue2);text-decoration:none}
+.footer-links{display:flex;gap:1.5rem;justify-content:center;margin-bottom:0.75rem;flex-wrap:wrap}
+
+@media(max-width:768px){
+  .contact-inner,.form-row{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .hero-stats{gap:1.5rem}
+  .team-grid{grid-template-columns:1fr}
+  .contact-inner{gap:2rem}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a href="#" class="nav-logo">SDET<span>AI</span></a>
+  <ul class="nav-links">
+    <li><a href="#courses">Courses</a></li>
+    <li><a href="#why">Why Us</a></li>
+    <li><a href="#testimonials">Alumni</a></li>
+    <li><a href="#contact" class="nav-cta">Enroll Now</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div>
+    <div class="hero-badge"><div class="pulse-dot"></div> Chennai's #1 SDET Training Institute</div>
+    <h1>Master the Art of<br><em>AI-Driven Testing</em></h1>
+    <p>Industry-led QA automation training that transforms developers into elite Software Development Engineers in Test — powered by real tools, real projects, real placements.</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Start Your Journey
+      </a>
+      <a href="#courses" class="btn-secondary">Explore Courses</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>200+</strong><span>Graduates</span></div>
+      <div class="hero-stat"><strong>95%</strong><span>Placement</span></div>
+      <div class="hero-stat"><strong>15+</strong><span>Tools</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="courses">
+  <div class="section-label">What We Teach</div>
+  <h2 class="section-title">Industry-Ready<br>Course Curriculum</h2>
+  <p class="section-sub">Hands-on programs designed around what top tech companies actually hire for.</p>
+  <div class="courses-grid">
+    <div class="course-card card-3d"><div class="course-icon">🤖</div><h3>Selenium & Java Automation</h3><p>Deep-dive into Selenium WebDriver, TestNG, Maven, and the Page Object Model. Build end-to-end frameworks from scratch.</p><span class="course-tag">Core Track</span></div>
+    <div class="course-card card-3d"><div class="course-icon">🧪</div><h3>Playwright & Cypress</h3><p>Modern browser automation with Playwright and Cypress. Component testing, API testing, and CI integration.</p><span class="course-tag">Advanced</span></div>
+    <div class="course-card card-3d"><div class="course-icon">⚡</div><h3>API Testing — Postman & RestAssured</h3><p>Master REST API testing, contract testing, and automated API suites with Postman and RestAssured.</p><span class="course-tag">Core Track</span></div>
+    <div class="course-card card-3d"><div class="course-icon">🧠</div><h3>AI-Powered QA Automation</h3><p>Leverage AI tools like Copilot, ChatGPT, and self-healing frameworks to boost automation productivity 10x.</p><span class="course-tag">AI Track</span></div>
+    <div class="course-card card-3d"><div class="course-icon">📊</div><h3>Performance Testing — JMeter</h3><p>Load, stress, and spike testing. Analyse bottlenecks, generate reports, and integrate perf tests into CI pipelines.</p><span class="course-tag">Specialisation</span></div>
+    <div class="course-card card-3d"><div class="course-icon">🔁</div><h3>DevOps & CI/CD for Testers</h3><p>Jenkins, GitHub Actions, Docker basics, and cloud deployment — the DevOps toolkit every SDET must know.</p><span class="course-tag">Advanced</span></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="why">
+  <div class="section-label">Our Edge</div>
+  <h2 class="section-title">Why SDETAI?</h2>
+  <p class="section-sub">We don't just teach tools. We build engineering mindset.</p>
+  <div class="why-grid">
+    <div class="why-item card-3d"><div class="icon">👨‍💼</div><h4>Industry Mentors</h4><p>Learn directly from working SDETs with 10+ years in product and service companies.</p></div>
+    <div class="why-item card-3d"><div class="icon">🛠️</div><h4>Project-Based Learning</h4><p>Build 3 real automation frameworks — ready to showcase in interviews.</p></div>
+    <div class="why-item card-3d"><div class="icon">👥</div><h4>Small Batch Sizes</h4><p>Max 15 students per batch. Personal attention, not lecture hall.</p></div>
+    <div class="why-item card-3d"><div class="icon">💼</div><h4>Placement Support</h4><p>Resume reviews, mock interviews, LinkedIn optimisation, and direct referrals.</p></div>
+    <div class="why-item card-3d"><div class="icon">♾️</div><h4>Lifetime Access</h4><p>Course materials, recordings, and alumni community — forever.</p></div>
+    <div class="why-item card-3d"><div class="icon">🗣️</div><h4>Tamil-Medium Friendly</h4><p>Comfortable teaching in Tamil and English — no language barrier.</p></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="testimonials">
+  <div class="section-label">Alumni Stories</div>
+  <h2 class="section-title">From Students<br>to Professionals</h2>
+  <p class="section-sub">Real outcomes from our graduates working at leading companies.</p>
+  <div class="testimonials-grid">
+    <div class="testimonial-card card-3d"><div class="stars">★★★★★</div><blockquote>"SDETAI completely changed my career. Within 3 months I landed a senior SDET role at a Bangalore product company — double my previous salary."</blockquote><div class="testimonial-author"><div class="avatar">AK</div><div><strong>Arun Kumar</strong><span>Senior SDET, Bangalore</span></div></div></div>
+    <div class="testimonial-card card-3d"><div class="stars">★★★★★</div><blockquote>"The hands-on project approach sets SDETAI apart. I had a complete Playwright framework to show in interviews. Got placed in 6 weeks."</blockquote><div class="testimonial-author"><div class="avatar">PM</div><div><strong>Priya Meenakshi</strong><span>Automation Engineer, Chennai</span></div></div></div>
+    <div class="testimonial-card card-3d"><div class="stars">★★★★★</div><blockquote>"As a manual tester I was scared of coding. Tamil medium support helped a lot. Now I automate critical flows in a fintech team."</blockquote><div class="testimonial-author"><div class="avatar">SK</div><div><strong>Suresh K.</strong><span>QA Engineer, Hyderabad</span></div></div></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div class="contact-wrap" id="contact">
+  <div class="contact-inner">
+    <div class="contact-info">
+      <div class="section-label">Get In Touch</div>
+      <h2>Contact<br>SDETAI Institute</h2>
+      <p>Start your journey towards becoming an industry-ready SDET professional. Reach the right team — we respond within 24 hours.</p>
+
+      <div class="team-grid">
+        <!-- Admin Support -->
+        <div class="team-card">
+          <div class="role">Admin Support</div>
+          <div class="name">Admin Team</div>
+          <a class="email" href="mailto:admin@sdetai.in">✉ admin@sdetai.in</a>
+        </div>
+        <!-- Helpdesk -->
+        <div class="team-card">
+          <div class="role">Helpdesk Team</div>
+          <div class="name">Helpdesk</div>
+          <a class="email" href="mailto:helpdesk@sdetai.in">✉ helpdesk@sdetai.in</a>
+        </div>
+        <!-- Jaisriram -->
+        <div class="team-card">
+          <div class="role">Administration Head</div>
+          <div class="name">Jaisriram D</div>
+          <a class="email" href="mailto:jaisriram@sdetai.in">✉ jaisriram@sdetai.in</a>
+        </div>
+        <!-- Leo Praveen -->
+        <div class="team-card">
+          <div class="role">Technical Support Head</div>
+          <div class="name">Leo Praveen</div>
+          <a class="email" href="mailto:leopraveen@sdetai.in">✉ leopraveen@sdetai.in</a>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem;padding:1rem 1.1rem;background:rgba(14,165,233,0.07);border-radius:12px;border:1px solid rgba(14,165,233,0.15);display:flex;align-items:flex-start;gap:10px">
+        <span style="font-size:1.1rem;margin-top:1px">📍</span>
+        <div>
+          <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue1);margin-bottom:3px">Location</div>
+          <div style="font-size:0.875rem;color:var(--text2);font-weight:500">Orapakkam, Chennai, Tamil Nadu, India</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="contact-form">
+      <div class="form-title">Send us a Message</div>
+      <div class="form-row">
+        <div class="form-group"><label>Name <span class="req">*</span></label><input type="text" id="fname" placeholder="Your full name" required></div>
+        <div class="form-group"><label>Email <span class="req">*</span></label><input type="email" id="femail" placeholder="you@example.com" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone</label><input type="tel" id="fphone" placeholder="+91 98xxx xxxxx"></div>
+        <div class="form-group">
+          <label>Course Interest</label>
+          <select id="fcourse">
+            <option value="">Select a course…</option>
+            <option>Selenium & Java Automation</option>
+            <option>Playwright & Cypress</option>
+            <option>API Testing — Postman & RestAssured</option>
+            <option>AI-Powered QA Automation</option>
+            <option>Performance Testing — JMeter</option>
+            <option>DevOps & CI/CD for Testers</option>
+            <option>Full Program (All Courses)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Message <span class="req">*</span></label><textarea id="fmessage" placeholder="Tell us about your background and what you want to achieve…"></textarea></div>
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()">Send Message →</button>
+      <p class="form-status" id="form-status"></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="mailto:admin@sdetai.in">admin@sdetai.in</a>
+    <a href="mailto:helpdesk@sdetai.in">helpdesk@sdetai.in</a>
+    <a href="mailto:jaisriram@sdetai.in">jaisriram@sdetai.in</a>
+    <a href="mailto:leopraveen@sdetai.in">leopraveen@sdetai.in</a>
+  </div>
+  <p>© 2025 SDETAI – Software Development Engineer in Test AI Institute · Orapakkam, Chennai, Tamil Nadu</p>
+</footer>
+
+<div class="toast" id="toast"><strong id="toast-title">Sent!</strong><span id="toast-msg">We'll get back to you within 24 hours.</span></div>
+
+<!--
+════════════════════════════════════════════
+  SUPABASE SETUP — 3 steps
+════════════════════════════════════════════
+  1. https://supabase.com → New project
+
+  2. SQL Editor → run:
+  ──────────────────────────────────────────
+  create table contact_submissions (
+    id uuid default gen_random_uuid() primary key,
+    name text not null,
+    email text not null,
+    phone text,
+    course text,
+    message text not null,
+    created_at timestamptz default now()
+  );
+  alter table contact_submissions enable row level security;
+  create policy "Allow inserts" on contact_submissions
+    for insert with check (true);
+  create policy "Allow admin reads" on contact_submissions
+    for select using (true);
+  ──────────────────────────────────────────
+
+  3. Replace SUPABASE_URL + SUPABASE_ANON_KEY below
+     (Settings → API → Project URL & anon public key)
+════════════════════════════════════════════
+-->
+<script>
+const SUPABASE_URL      = 'https://YOUR_PROJECT_ID.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+
+/* 3D particle canvas */
+(function(){
+  const canvas=document.getElementById('bg-canvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,pts;
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  function init(){pts=Array.from({length:60},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*3+1,dx:(Math.random()-0.5)*0.35,dy:(Math.random()-0.5)*0.35,a:Math.random()*0.3+0.07,c:['#7dd3fc','#38bdf8','#0ea5e9','#93c5fd','#a5f3fc','#bae6fd'][Math.floor(Math.random()*6)]}));}
+  function hex2(n){return Math.round(n*255).toString(16).padStart(2,'0');}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<150){ctx.beginPath();ctx.strokeStyle=`rgba(14,165,233,${0.09*(1-d/150)})`;ctx.lineWidth=0.7;ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}}
+    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.c+hex2(p.a);ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;if(p.y<-10)p.y=H+10;if(p.y>H+10)p.y=-10;});
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>{resize();init();});
+  resize();init();draw();
+})();
+
+function showToast(title,msg,isError=false){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-title').textContent=title;
+  document.getElementById('toast-msg').textContent=msg;
+  t.className='toast'+(isError?' error':'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),4500);
+}
+
+async function submitForm(){
+  const name=document.getElementById('fname').value.trim();
+  const email=document.getElementById('femail').value.trim();
+  const phone=document.getElementById('fphone').value.trim();
+  const course=document.getElementById('fcourse').value;
+  const message=document.getElementById('fmessage').value.trim();
+  const btn=document.getElementById('submit-btn');
+  const status=document.getElementById('form-status');
+  if(!name){showToast('Missing field','Please enter your name.',true);return;}
+  if(!email||!/\S+@\S+\.\S+/.test(email)){showToast('Invalid email','Please enter a valid email address.',true);return;}
+  if(!message){showToast('Missing field','Please enter a message.',true);return;}
+  btn.disabled=true;btn.textContent='Sending…';status.textContent='';
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/contact_submissions`,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${SUPABASE_ANON_KEY}`,'Prefer':'return=minimal'},body:JSON.stringify({name,email,phone,course,message})});
+    if(res.ok||res.status===201){
+      btn.textContent='✓ Sent!';
+      showToast('Message sent! 🎉',"We'll get back to you within 24 hours.");
+      ['fname','femail','fphone','fmessage'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('fcourse').value='';
+      status.textContent='Thank you! Our team will contact you soon.';
+      status.style.color='var(--blue2)';
+      setTimeout(()=>{btn.disabled=false;btn.textContent='Send Message →';status.textContent='';},4000);
+    }else{throw new Error('fail');}
+  }catch(e){
+    if(SUPABASE_URL.includes('YOUR_PROJECT_ID')){btn.textContent='✓ Demo';status.textContent='⚙️ Add Supabase credentials to activate the database.';status.style.color='var(--text3)';showToast('Demo mode','Configure Supabase to save real submissions.');}
+    else{btn.textContent='Send Message →';showToast('Error','Something went wrong. Please try again.',true);}
+    btn.disabled=false;
+  }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'&&e.target.closest('.contact-form'))submitForm();});
+</script>
+</body>
+</html>

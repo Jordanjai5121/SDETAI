@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDETAI Admin — Submissions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f6ff;--bg2:#e4eeff;--white:#ffffff;
+  --blue1:#0ea5e9;--blue2:#0284c7;--blue3:#0369a1;
+  --indigo:#4f46e5;--green:#10b981;--red:#ef4444;--amber:#f59e0b;
+  --text:#0f1e35;--text2:#3a5270;--text3:#7a9ab8;
+  --border:rgba(14,165,233,0.15);--border2:rgba(14,165,233,0.3);
+  --shadow:0 8px 30px rgba(14,165,233,0.12);
+  --sans:'Outfit',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{
+  position:fixed;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#dbeeff 0%,#e8f4ff 60%,#dbeeff 100%);
+  z-index:1000;
+  transition:opacity 0.4s ease;
+}
+#login-screen.hidden{opacity:0;pointer-events:none;}
+
+.login-card{
+  background:#fff;
+  border:1px solid var(--border2);
+  border-radius:20px;
+  padding:2.5rem 2.25rem;
+  width:100%;max-width:400px;
+  box-shadow:0 25px 60px rgba(14,165,233,0.18);
+  text-align:center;
+}
+.login-logo{
+  font-size:1.6rem;font-weight:700;
+  background:linear-gradient(135deg,var(--blue1),var(--indigo));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:0.25rem;
+}
+.login-sub{font-size:0.82rem;color:var(--text3);margin-bottom:2rem;font-weight:500}
+.login-card label{display:block;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:0.4rem;text-align:left}
+.login-card input{
+  width:100%;background:var(--bg);
+  border:1.5px solid rgba(14,165,233,0.2);
+  border-radius:10px;padding:0.75rem 1rem;
+  color:var(--text);font-family:var(--sans);font-size:0.95rem;
+  outline:none;margin-bottom:1rem;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.login-card input:focus{border-color:var(--blue1);box-shadow:0 0 0 4px rgba(14,165,233,0.1);}
+.login-btn{
+  width:100%;
+  background:linear-gradient(135deg,var(--blue1),var(--blue2));
+  color:#fff;font-family:var(--sans);font-weight:700;font-size:0.92rem;
+  padding:0.85rem;border:none;border-radius:10px;cursor:pointer;
+  box-shadow:0 6px 20px rgba(14,165,233,0.35);
+  transition:transform 0.2s,box-shadow 0.2s;
+}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(14,165,233,0.45);}
+.login-error{font-size:0.8rem;color:var(--red);margin-top:0.75rem;min-height:1rem;font-weight:500}
+
+/* ── ADMIN LAYOUT ── */
+#admin-screen{display:none;min-height:100vh;flex-direction:column;}
+#admin-screen.show{display:flex;}
+
+/* Top bar */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(240,246,255,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0.85rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 4px 20px rgba(14,165,233,0.07);
+}
+.topbar-logo{font-size:1.1rem;font-weight:700;color:var(--blue2)}
+.topbar-logo span{color:var(--indigo)}
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.topbar-badge{
+  font-size:0.72rem;font-weight:600;padding:0.3rem 0.75rem;
+  border-radius:100px;background:rgba(14,165,233,0.1);
+  color:var(--blue2);border:1px solid rgba(14,165,233,0.2);
+}
+.logout-btn{
+  font-size:0.8rem;font-weight:600;color:var(--text3);
+  background:none;border:1px solid var(--border2);
+  border-radius:8px;padding:0.35rem 0.85rem;cursor:pointer;
+  transition:color 0.2s,border-color 0.2s;font-family:var(--sans);
+}
+.logout-btn:hover{color:var(--red);border-color:rgba(239,68,68,0.35);}
+
+/* Main content */
+.main{flex:1;padding:2rem;max-width:1300px;margin:0 auto;width:100%}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{
+  background:#fff;border:1px solid var(--border);border-radius:14px;
+  padding:1.1rem 1.25rem;box-shadow:var(--shadow);
+}
+.stat-card .label{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:4px}
+.stat-card .value{font-size:1.8rem;font-weight:700;color:var(--blue2);line-height:1}
+.stat-card .sub{font-size:0.72rem;color:var(--text3);margin-top:3px}
+
+/* Controls bar */
+.controls{
+  background:#fff;border:1px solid var(--border);border-radius:14px;
+  padding:1rem 1.25rem;margin-bottom:1.5rem;
+  display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;
+  box-shadow:var(--shadow);
+}
+.controls input,.controls select{
+  background:var(--bg);border:1.5px solid rgba(14,165,233,0.2);
+  border-radius:8px;padding:0.5rem 0.85rem;
+  color:var(--text);font-family:var(--sans);font-size:0.85rem;
+  outline:none;transition:border-color 0.2s;
+}
+.controls input{flex:1;min-width:200px;}
+.controls input:focus,.controls select:focus{border-color:var(--blue1);}
+.export-btn{
+  margin-left:auto;
+  background:linear-gradient(135deg,var(--green),#059669);
+  color:#fff;font-family:var(--sans);font-weight:600;font-size:0.82rem;
+  padding:0.5rem 1.1rem;border:none;border-radius:8px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(16,185,129,0.3);
+  transition:transform 0.15s,box-shadow 0.15s;display:flex;align-items:center;gap:6px;
+}
+.export-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,0.4);}
+.refresh-btn{
+  background:rgba(14,165,233,0.08);color:var(--blue2);font-family:var(--sans);
+  font-weight:600;font-size:0.82rem;padding:0.5rem 1rem;
+  border:1px solid rgba(14,165,233,0.2);border-radius:8px;cursor:pointer;
+  transition:background 0.15s;display:flex;align-items:center;gap:6px;
+}
+.refresh-btn:hover{background:rgba(14,165,233,0.14);}
+
+/* Table */
+.table-wrap{
+  background:#fff;border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;box-shadow:var(--shadow);
+}
+.table-header{
+  padding:1rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.table-header h3{font-size:0.9rem;font-weight:700;color:var(--text)}
+.table-count{font-size:0.75rem;color:var(--text3);background:var(--bg);padding:0.25rem 0.7rem;border-radius:100px;border:1px solid var(--border)}
+
+.tbl-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+thead th{
+  background:var(--bg);padding:0.75rem 1rem;
+  text-align:left;font-size:0.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(14,165,233,0.03);}
+td{padding:0.85rem 1rem;color:var(--text);vertical-align:top;}
+td.td-name{font-weight:600;color:var(--text)}
+td.td-email a{color:var(--blue2);text-decoration:none;font-weight:500;}
+td.td-email a:hover{text-decoration:underline;}
+td.td-msg{max-width:260px;color:var(--text2);line-height:1.5;word-break:break-word;}
+td.td-date{white-space:nowrap;color:var(--text3);}
+td.td-course{white-space:nowrap;}
+
+.badge-course{
+  display:inline-block;font-size:0.66rem;font-weight:700;
+  padding:0.2rem 0.55rem;border-radius:5px;
+  background:rgba(14,165,233,0.08);color:var(--blue2);
+  border:1px solid rgba(14,165,233,0.2);white-space:nowrap;
+}
+.badge-empty{color:var(--text3);font-style:italic}
+
+/* Row actions */
+.del-btn{
+  background:none;border:none;cursor:pointer;color:var(--text3);
+  font-size:1rem;padding:4px 6px;border-radius:6px;transition:color 0.15s,background 0.15s;
+}
+.del-btn:hover{color:var(--red);background:rgba(239,68,68,0.08);}
+
+/* Empty & loading states */
+.state-row td{text-align:center;padding:3rem;color:var(--text3);font-size:0.9rem;}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(14,165,233,0.25);border-top-color:var(--blue1);border-radius:50%;animation:spin 0.7s linear infinite;margin-bottom:0.5rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:1rem;border-top:1px solid var(--border)}
+.pg-btn{background:none;border:1px solid var(--border2);border-radius:7px;padding:0.35rem 0.75rem;font-family:var(--sans);font-size:0.8rem;font-weight:600;color:var(--text2);cursor:pointer;transition:background 0.15s,color 0.15s;}
+.pg-btn:hover{background:rgba(14,165,233,0.08);color:var(--blue2);}
+.pg-btn.active{background:var(--blue1);color:#fff;border-color:var(--blue1);}
+.pg-btn:disabled{opacity:0.35;cursor:not-allowed;}
+.pg-info{font-size:0.78rem;color:var(--text3);padding:0 0.5rem;}
+
+/* Toast */
+.toast{position:fixed;bottom:2rem;right:2rem;background:#fff;border:1.5px solid rgba(14,165,233,0.35);border-radius:12px;padding:0.9rem 1.1rem;font-size:0.85rem;color:var(--text);z-index:999;box-shadow:0 12px 40px rgba(14,165,233,0.18);transform:translateY(120px);opacity:0;transition:transform 0.3s ease,opacity 0.3s ease;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success strong{color:var(--green)}
+.toast.error strong{color:var(--red)}
+.toast strong{display:block;margin-bottom:1px}
+
+/* Confirm modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,30,53,0.35);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.modal-bg.show{opacity:1;pointer-events:all;}
+.modal{background:#fff;border-radius:16px;padding:1.75rem;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(14,165,233,0.2);text-align:center}
+.modal h4{font-size:1rem;font-weight:700;margin-bottom:0.5rem;color:var(--text)}
+.modal p{font-size:0.85rem;color:var(--text2);margin-bottom:1.5rem}
+.modal-btns{display:flex;gap:0.75rem;justify-content:center}
+.modal-cancel{background:var(--bg);border:1px solid var(--border2);color:var(--text2);font-family:var(--sans);font-weight:600;font-size:0.85rem;padding:0.6rem 1.25rem;border-radius:8px;cursor:pointer;transition:background 0.15s}
+.modal-cancel:hover{background:var(--bg2)}
+.modal-confirm{background:var(--red);color:#fff;font-family:var(--sans);font-weight:700;font-size:0.85rem;padding:0.6rem 1.25rem;border-radius:8px;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(239,68,68,0.3);transition:opacity 0.15s}
+.modal-confirm:hover{opacity:0.88}
+
+@media(max-width:640px){
+  .main{padding:1rem}
+  .controls{flex-direction:column;align-items:stretch}
+  .export-btn{margin-left:0}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">SDETAI</div>
+    <div class="login-sub">Admin Panel · Secure Access</div>
+    <label>Username</label>
+    <input type="text" id="login-user" placeholder="admin" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    <label>Password</label>
+    <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ══ ADMIN ══ -->
+<div id="admin-screen">
+  <div class="topbar">
+    <div class="topbar-logo">SDET<span>AI</span> <span style="font-weight:400;color:var(--text3);font-size:0.85rem;margin-left:6px">Admin</span></div>
+    <div class="topbar-right">
+      <span class="topbar-badge" id="admin-name-badge">Jaisriram D</span>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="label">Total Enquiries</div><div class="value" id="stat-total">—</div><div class="sub">All time</div></div>
+      <div class="stat-card"><div class="label">This Week</div><div class="value" id="stat-week">—</div><div class="sub">Last 7 days</div></div>
+      <div class="stat-card"><div class="label">Today</div><div class="value" id="stat-today">—</div><div class="sub">New submissions</div></div>
+      <div class="stat-card"><div class="label">Top Course</div><div class="value" style="font-size:0.9rem;padding-top:4px" id="stat-course">—</div><div class="sub">Most requested</div></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <input type="text" id="search-input" placeholder="🔍  Search by name, email or message…" oninput="applyFilters()">
+      <select id="filter-course" onchange="applyFilters()">
+        <option value="">All Courses</option>
+        <option>Selenium & Java Automation</option>
+        <option>Playwright & Cypress</option>
+        <option>API Testing — Postman & RestAssured</option>
+        <option>AI-Powered QA Automation</option>
+        <option>Performance Testing — JMeter</option>
+        <option>DevOps & CI/CD for Testers</option>
+        <option>Full Program (All Courses)</option>
+      </select>
+      <select id="filter-date" onchange="applyFilters()">
+        <option value="">All Time</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+      </select>
+      <button class="refresh-btn" onclick="loadData()">↺ Refresh</button>
+      <button class="export-btn" onclick="exportCSV()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Export CSV
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <h3>Enquiry Submissions</h3>
+        <span class="table-count" id="row-count">0 records</span>
+      </div>
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Course Interest</th>
+              <th>Message</th>
+              <th>Submitted On</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbl-body">
+            <tr class="state-row"><td colspan="8"><div class="spinner"></div><br>Loading submissions…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm modal -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h4>Delete this record?</h4>
+    <p>This action cannot be undone. The submission will be permanently removed from the database.</p>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-confirm" id="modal-confirm-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><strong id="toast-title"></strong><span id="toast-msg"></span></div>
+
+<!--
+════════════════════════════════════════════
+  CONFIG — same Supabase values as index.html
+  Also set ADMIN credentials below
+════════════════════════════════════════════
+-->
+<script>
+/* ══ CONFIG ══════════════════════════════ */
+const SUPABASE_URL      = 'https://YOUR_PROJECT_ID.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+
+/* Admin credentials — change these! */
+const ADMINS = [
+  { user: 'jaisriram',  pass: 'sdetai@admin2025',  name: 'Jaisriram D' },
+  { user: 'leopraveen', pass: 'sdetai@tech2025',   name: 'Leo Praveen' },
+  { user: 'admin',      pass: 'sdetai@2025',       name: 'Admin' }
+];
+/* ════════════════════════════════════════ */
+
+const PAGE_SIZE = 15;
+let allData = [];
+let filtered = [];
+let currentPage = 1;
+let deleteId = null;
+
+/* ── AUTH ── */
+function doLogin(){
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const match = ADMINS.find(a => a.user === u && a.pass === p);
+  if(match){
+    sessionStorage.setItem('sdetai_admin', JSON.stringify({ user: match.user, name: match.name }));
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('admin-screen').classList.add('show');
+    document.getElementById('admin-name-badge').textContent = match.name;
+    setTimeout(()=>{ document.getElementById('login-screen').style.display='none'; }, 400);
+    loadData();
+  } else {
+    document.getElementById('login-error').textContent = 'Invalid username or password.';
+    document.getElementById('login-pass').value = '';
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem('sdetai_admin');
+  location.reload();
+}
+
+/* Auto-restore session */
+window.addEventListener('DOMContentLoaded', () => {
+  const s = sessionStorage.getItem('sdetai_admin');
+  if(s){
+    const d = JSON.parse(s);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').classList.add('show');
+    document.getElementById('admin-name-badge').textContent = d.name;
+    loadData();
+  }
+});
+
+/* ── DATA ── */
+async function loadData(){
+  setTableLoading();
+  try{
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/contact_submissions?select=*&order=created_at.desc&limit=1000`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    if(!res.ok) throw new Error('Fetch failed');
+    allData = await res.json();
+    applyFilters();
+    updateStats();
+    showToast('Refreshed','Data loaded successfully.','success');
+  } catch(e){
+    if(SUPABASE_URL.includes('YOUR_PROJECT_ID')){
+      allData = getDemoData();
+      applyFilters();
+      updateStats();
+      showToast('Demo mode','Configure Supabase to load real data.','success');
+    } else {
+      showToast('Error','Failed to load data. Check your Supabase config.','error');
+      setTableEmpty('Could not connect to database.');
+    }
+  }
+}
+
+function getDemoData(){
+  const courses = ['Selenium & Java Automation','Playwright & Cypress','AI-Powered QA Automation','Full Program (All Courses)','API Testing — Postman & RestAssured'];
+  const names = ['Arun Kumar','Priya Devi','Suresh Babu','Meena R','Karthik S','Divya N','Rajesh M','Anitha T'];
+  return Array.from({length:18},(_, i)=>({
+    id:`demo-${i+1}`,
+    name: names[i%names.length],
+    email: `user${i+1}@email.com`,
+    phone: `+91 9${Math.floor(Math.random()*9000000000+1000000000)}`,
+    course: courses[i%courses.length],
+    message: 'Hi, I am interested in joining this course. Please share batch details and fee structure.',
+    created_at: new Date(Date.now() - i*86400000*(i%4+1)).toISOString()
+  }));
+}
+
+function updateStats(){
+  const total = allData.length;
+  const now = new Date();
+  const todayStr = now.toDateString();
+  const weekAgo = new Date(now - 7*86400000);
+  const todayCount = allData.filter(r => new Date(r.created_at).toDateString() === todayStr).length;
+  const weekCount  = allData.filter(r => new Date(r.created_at) >= weekAgo).length;
+
+  const courseMap = {};
+  allData.forEach(r => { if(r.course){ courseMap[r.course] = (courseMap[r.course]||0)+1; }});
+  const topCourse = Object.entries(courseMap).sort((a,b)=>b[1]-a[1])[0];
+
+  document.getElementById('stat-total').textContent  = total;
+  document.getElementById('stat-week').textContent   = weekCount;
+  document.getElementById('stat-today').textContent  = todayCount;
+  document.getElementById('stat-course').textContent = topCourse
+    ? topCourse[0].split('—')[0].split('&')[0].trim().split(' ').slice(0,2).join(' ')
+    : '—';
+}
+
+function applyFilters(){
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const course = document.getElementById('filter-course').value;
+  const dateF  = document.getElementById('filter-date').value;
+  const now = new Date();
+
+  filtered = allData.filter(r => {
+    const matchSearch = !search ||
+      (r.name||'').toLowerCase().includes(search) ||
+      (r.email||'').toLowerCase().includes(search) ||
+      (r.message||'').toLowerCase().includes(search) ||
+      (r.phone||'').toLowerCase().includes(search);
+    const matchCourse = !course || r.course === course;
+    let matchDate = true;
+    if(dateF === 'today'){
+      matchDate = new Date(r.created_at).toDateString() === now.toDateString();
+    } else if(dateF === 'week'){
+      matchDate = new Date(r.created_at) >= new Date(now - 7*86400000);
+    } else if(dateF === 'month'){
+      matchDate = new Date(r.created_at) >= new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+    return matchSearch && matchCourse && matchDate;
+  });
+
+  currentPage = 1;
+  renderTable();
+}
+
+function renderTable(){
+  const tbody = document.getElementById('tbl-body');
+  document.getElementById('row-count').textContent = `${filtered.length} record${filtered.length!==1?'s':''}`;
+
+  if(filtered.length === 0){
+    tbody.innerHTML = `<tr class="state-row"><td colspan="8">No submissions found matching your filters.</td></tr>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  const start = (currentPage-1)*PAGE_SIZE;
+  const page  = filtered.slice(start, start+PAGE_SIZE);
+  const totalPages = Math.ceil(filtered.length/PAGE_SIZE);
+
+  tbody.innerHTML = page.map((r,i) => {
+    const dt = new Date(r.created_at);
+    const dateStr = dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    const timeStr = dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    return `<tr>
+      <td style="color:var(--text3);font-size:0.75rem">${start+i+1}</td>
+      <td class="td-name">${esc(r.name||'—')}</td>
+      <td class="td-email"><a href="mailto:${esc(r.email)}">${esc(r.email||'—')}</a></td>
+      <td style="color:var(--text2)">${esc(r.phone||'—')}</td>
+      <td class="td-course">${r.course ? `<span class="badge-course">${esc(r.course)}</span>` : '<span class="badge-empty">Not selected</span>'}</td>
+      <td class="td-msg">${esc((r.message||'').substring(0,120))}${(r.message||'').length>120?'…':''}</td>
+      <td class="td-date">${dateStr}<br><span style="font-size:0.7rem;color:var(--text3)">${timeStr}</span></td>
+      <td><button class="del-btn" onclick="confirmDelete('${r.id}')" title="Delete">🗑</button></td>
+    </tr>`;
+  }).join('');
+
+  /* Pagination */
+  let pg = '';
+  if(totalPages > 1){
+    pg += `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹ Prev</button>`;
+    for(let p=1;p<=totalPages;p++){
+      if(p===1||p===totalPages||Math.abs(p-currentPage)<=1){
+        pg += `<button class="pg-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+      } else if(Math.abs(p-currentPage)===2){
+        pg += `<span class="pg-info">…</span>`;
+      }
+    }
+    pg += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>Next ›</button>`;
+    pg += `<span class="pg-info">${start+1}–${Math.min(start+PAGE_SIZE,filtered.length)} of ${filtered.length}</span>`;
+  }
+  document.getElementById('pagination').innerHTML = pg;
+}
+
+function goPage(p){
+  const total = Math.ceil(filtered.length/PAGE_SIZE);
+  if(p<1||p>total) return;
+  currentPage = p;
+  renderTable();
+  document.querySelector('.table-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function setTableLoading(){
+  document.getElementById('tbl-body').innerHTML = `<tr class="state-row"><td colspan="8"><div class="spinner"></div><br>Loading…</td></tr>`;
+  document.getElementById('pagination').innerHTML = '';
+}
+
+function setTableEmpty(msg){
+  document.getElementById('tbl-body').innerHTML = `<tr class="state-row"><td colspan="8">${msg}</td></tr>`;
+}
+
+/* ── DELETE ── */
+function confirmDelete(id){
+  deleteId = id;
+  document.getElementById('modal-bg').classList.add('show');
+  document.getElementById('modal-confirm-btn').onclick = async () => {
+    closeModal();
+    await deleteRow(deleteId);
+  };
+}
+
+function closeModal(){ document.getElementById('modal-bg').classList.remove('show'); }
+
+async function deleteRow(id){
+  try{
+    if(id.startsWith('demo-')){
+      allData = allData.filter(r => r.id !== id);
+      applyFilters(); updateStats();
+      showToast('Deleted','Record removed (demo mode).','success');
+      return;
+    }
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/contact_submissions?id=eq.${id}`,{
+      method:'DELETE',
+      headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${SUPABASE_ANON_KEY}`}
+    });
+    if(res.ok){
+      allData = allData.filter(r => r.id !== id);
+      applyFilters(); updateStats();
+      showToast('Deleted','Record permanently removed.','success');
+    } else { throw new Error(); }
+  } catch(e){ showToast('Error','Delete failed. Try again.','error'); }
+}
+
+/* ── EXPORT CSV ── */
+function exportCSV(){
+  if(!filtered.length){ showToast('No data','Nothing to export.','error'); return; }
+  const headers = ['#','Name','Email','Phone','Course','Message','Submitted On'];
+  const rows = filtered.map((r,i) => [
+    i+1,
+    `"${(r.name||'').replace(/"/g,'""')}"`,
+    `"${(r.email||'').replace(/"/g,'""')}"`,
+    `"${(r.phone||'').replace(/"/g,'""')}"`,
+    `"${(r.course||'').replace(/"/g,'""')}"`,
+    `"${(r.message||'').replace(/"/g,'""')}"`,
+    `"${new Date(r.created_at).toLocaleString('en-IN')}"`
+  ].join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sdetai_submissions_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported!',`${filtered.length} records downloaded as CSV.`,'success');
+}
+
+/* ── UTILS ── */
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function showToast(title, msg, type='success'){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-msg').textContent = msg;
+  t.className = `toast ${type}`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 4000);
+}
+
+document.getElementById('modal-bg').addEventListener('click', e => {
+  if(e.target === document.getElementById('modal-bg')) closeModal();
+});
+</script>
+</body>
+</html>
