@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SDETAI — Student Admission</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f0f6ff;--bg2:#e4eeff;--blue1:#0ea5e9;--blue2:#0284c7;--blue3:#0369a1;
+  --indigo:#4f46e5;--text:#0f1e35;--text2:#3a5270;--text3:#7a9ab8;
+  --border:rgba(14,165,233,0.15);--border2:rgba(14,165,233,0.35);
+  --shadow:0 20px 60px rgba(14,165,233,0.15);--shadow2:0 8px 30px rgba(14,165,233,0.12);
+  --serif:'Playfair Display',Georgia,serif;--sans:'Outfit',system-ui,sans-serif;
+  --green:#10b981;--red:#ef4444;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;backdrop-filter:blur(20px);background:rgba(240,246,255,0.9);border-bottom:1px solid var(--border);box-shadow:0 4px 24px rgba(14,165,233,0.08)}
+.nav-logo{font-family:var(--serif);font-size:1.4rem;color:var(--blue2);text-decoration:none}
+.nav-logo span{color:var(--indigo)}
+.nav-back{font-size:0.85rem;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:6px;font-weight:500;transition:color 0.2s}
+.nav-back:hover{color:var(--blue2)}
+
+/* HERO */
+.page-hero{padding:7rem 2rem 2rem;text-align:center;max-width:700px;margin:0 auto}
+.page-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(14,165,233,0.1);border:1px solid rgba(14,165,233,0.28);color:var(--blue2);font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.4rem 1rem;border-radius:100px;margin-bottom:1rem}
+.page-hero h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);letter-spacing:-1px;margin-bottom:0.5rem}
+.page-hero p{color:var(--text2);font-size:0.95rem;margin-bottom:2rem}
+
+/* STEPPER */
+.stepper-wrap{max-width:700px;margin:0 auto 2rem;padding:0 2rem}
+.stepper{display:flex;align-items:center;gap:0;position:relative}
+.step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;z-index:1}
+.step-circle{width:38px;height:38px;border-radius:50%;border:2px solid var(--border2);background:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:var(--text3);transition:all 0.3s;position:relative}
+.step.active .step-circle{background:linear-gradient(135deg,var(--blue1),var(--blue2));border-color:var(--blue1);color:#fff;box-shadow:0 0 0 4px rgba(14,165,233,0.15)}
+.step.done .step-circle{background:var(--green);border-color:var(--green);color:#fff}
+.step-label{font-size:0.68rem;font-weight:600;color:var(--text3);margin-top:6px;text-align:center;letter-spacing:0.03em;text-transform:uppercase}
+.step.active .step-label{color:var(--blue2)}
+.step.done .step-label{color:var(--green)}
+.step-line{flex:1;height:2px;background:var(--border2);position:relative;top:-14px;z-index:0;transition:background 0.3s}
+.step-line.done{background:var(--green)}
+
+/* FORM CARD */
+.form-wrap{max-width:700px;margin:0 auto 4rem;padding:0 2rem}
+.form-card{background:#fff;border:1px solid var(--border2);border-radius:20px;padding:2.5rem;box-shadow:var(--shadow2)}
+.form-section-title{font-family:var(--serif);font-size:1.4rem;color:var(--text);margin-bottom:0.4rem;letter-spacing:-0.5px}
+.form-section-sub{font-size:0.85rem;color:var(--text3);margin-bottom:2rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.form-grid.full{grid-template-columns:1fr}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:0.75rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em}
+.fg label .req{color:var(--blue1)}
+.fg input,.fg select,.fg textarea{font-family:var(--sans);font-size:0.9rem;padding:0.7rem 1rem;border:1.5px solid rgba(14,165,233,0.2);border-radius:10px;background:var(--bg);color:var(--text);outline:none;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue1);background:#fff;box-shadow:0 0 0 4px rgba(14,165,233,0.1)}
+.fg textarea{resize:vertical;min-height:90px;line-height:1.6}
+.fg select option{background:#fff}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:2rem 0}
+.subsection-label{font-size:0.75rem;font-weight:700;color:var(--blue1);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.subsection-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* SAME ADDRESS TOGGLE */
+.toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.toggle-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue1);cursor:pointer}
+.toggle-row label{font-size:0.85rem;color:var(--text2);cursor:pointer;font-weight:500}
+
+/* RADIO GROUP */
+.radio-group{display:flex;gap:1rem;flex-wrap:wrap}
+.radio-opt{display:flex;align-items:center;gap:8px;padding:0.6rem 1rem;border:1.5px solid rgba(14,165,233,0.2);border-radius:10px;cursor:pointer;transition:all 0.2s;background:var(--bg)}
+.radio-opt input{accent-color:var(--blue1);cursor:pointer}
+.radio-opt span{font-size:0.85rem;font-weight:500;color:var(--text2)}
+.radio-opt:has(input:checked){border-color:var(--blue1);background:rgba(14,165,233,0.06)}
+
+/* BUTTONS */
+.btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;gap:1rem}
+.btn-prev{padding:0.75rem 1.5rem;background:#fff;color:var(--text2);font-family:var(--sans);font-weight:600;font-size:0.9rem;border:1.5px solid var(--border2);border-radius:10px;cursor:pointer;transition:all 0.2s}
+.btn-prev:hover{background:var(--bg);color:var(--blue2)}
+.btn-next{padding:0.75rem 2rem;background:linear-gradient(135deg,var(--blue1),var(--blue2));color:#fff;font-family:var(--sans);font-weight:700;font-size:0.9rem;border:none;border-radius:10px;cursor:pointer;box-shadow:0 6px 20px rgba(14,165,233,0.35);transition:all 0.2s;display:flex;align-items:center;gap:8px}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(14,165,233,0.45)}
+.btn-next:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.step-indicator{font-size:0.8rem;color:var(--text3);font-weight:500}
+
+/* SUCCESS STATE */
+.success-card{text-align:center;padding:3rem 2rem}
+.success-icon{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#d1fae5,#6ee7b7);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1.5rem}
+.success-card h2{font-family:var(--serif);font-size:2rem;margin-bottom:0.5rem;color:var(--text)}
+.success-card p{color:var(--text2);margin-bottom:0.5rem}
+.student-id-box{display:inline-block;background:rgba(14,165,233,0.08);border:1.5px solid var(--border2);border-radius:12px;padding:0.75rem 2rem;font-size:1.3rem;font-weight:700;color:var(--blue2);font-family:'Courier New',monospace;margin:1rem 0;letter-spacing:2px}
+.btn-portal{display:inline-flex;align-items:center;gap:8px;margin-top:1.5rem;padding:0.85rem 2rem;background:linear-gradient(135deg,var(--blue1),var(--blue2));color:#fff;font-family:var(--sans);font-weight:700;font-size:0.9rem;border-radius:10px;text-decoration:none;box-shadow:0 6px 20px rgba(14,165,233,0.35)}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:#fff;border:1.5px solid rgba(14,165,233,0.3);border-radius:12px;padding:1rem 1.25rem;font-size:0.85rem;color:var(--text);z-index:999;box-shadow:var(--shadow2);transform:translateY(120px);opacity:0;transition:all 0.3s;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.err{border-color:rgba(239,68,68,0.4)}
+.toast strong{display:block;color:var(--blue2);margin-bottom:2px;font-size:0.9rem}
+.toast.err strong{color:var(--red)}
+
+@media(max-width:600px){
+  .form-grid{grid-template-columns:1fr}
+  .form-grid.three{grid-template-columns:1fr 1fr}
+  nav{padding:1rem 1.25rem}
+  .form-card{padding:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">SDET<span>AI</span></a>
+  <a href="/" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-badge">🎓 Student Admission</div>
+  <h1>Join SDETAI Institute</h1>
+  <p>Complete your admission in 4 simple steps. Your details are saved securely.</p>
+</div>
+
+<!-- STEPPER -->
+<div class="stepper-wrap">
+  <div class="stepper">
+    <div class="step active" id="s1"><div class="step-circle" id="sc1">1</div><div class="step-label">Personal</div></div>
+    <div class="step-line" id="l1"></div>
+    <div class="step" id="s2"><div class="step-circle" id="sc2">2</div><div class="step-label">Education</div></div>
+    <div class="step-line" id="l2"></div>
+    <div class="step" id="s3"><div class="step-circle" id="sc3">3</div><div class="step-label">Employment</div></div>
+    <div class="step-line" id="l3"></div>
+    <div class="step" id="s4"><div class="step-circle" id="sc4">4</div><div class="step-label">Address</div></div>
+  </div>
+</div>
+
+<div class="form-wrap">
+  <div class="form-card">
+
+    <!-- STEP 1: PERSONAL -->
+    <div id="step1">
+      <div class="form-section-title">Personal Details</div>
+      <div class="form-section-sub">Basic information about you</div>
+      <div class="form-grid">
+        <div class="fg"><label>Full Name <span class="req">*</span></label><input type="text" id="full_name" placeholder="As per certificate"/></div>
+        <div class="fg"><label>Date of Birth <span class="req">*</span></label><input type="date" id="date_of_birth"/></div>
+        <div class="fg"><label>Gender</label>
+          <div class="radio-group">
+            <label class="radio-opt"><input type="radio" name="gender" value="Male"/><span>Male</span></label>
+            <label class="radio-opt"><input type="radio" name="gender" value="Female"/><span>Female</span></label>
+            <label class="radio-opt"><input type="radio" name="gender" value="Other"/><span>Other</span></label>
+          </div>
+        </div>
+        <div class="fg"><label>Course Interested <span class="req">*</span></label>
+          <select id="course_enrolled">
+            <option value="">Select a course…</option>
+            <option>Selenium & Java Automation</option>
+            <option>Playwright & Cypress</option>
+            <option>API Testing — Postman & RestAssured</option>
+            <option>AI-Powered QA Automation</option>
+            <option>Performance Testing — JMeter</option>
+            <option>DevOps & CI/CD for Testers</option>
+            <option>Full Program (All Courses)</option>
+          </select>
+        </div>
+        <div class="fg"><label>Phone Number <span class="req">*</span></label><input type="tel" id="phone" placeholder="+91 98xxx xxxxx"/></div>
+        <div class="fg"><label>Alternate Phone</label><input type="tel" id="alternate_phone" placeholder="Optional"/></div>
+        <div class="fg form-grid full"><label>Email Address <span class="req">*</span></label><input type="email" id="email" placeholder="you@example.com"/></div>
+        <div class="fg form-grid full"><label>Set Password <span class="req">*</span></label><input type="password" id="password" placeholder="Min 8 characters — for student portal login"/></div>
+      </div>
+      <div class="btn-row">
+        <span class="step-indicator">Step 1 of 4</span>
+        <button class="btn-next" onclick="nextStep(1)">Next: Education <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+
+    <!-- STEP 2: EDUCATION -->
+    <div id="step2" style="display:none">
+      <div class="form-section-title">Education Details</div>
+      <div class="form-section-sub">Your academic background</div>
+
+      <div class="subsection-label">10th Standard</div>
+      <div class="form-grid three">
+        <div class="fg"><label>School Name</label><input type="text" id="tenth_school" placeholder="School name"/></div>
+        <div class="fg"><label>Percentage / CGPA</label><input type="text" id="tenth_percentage" placeholder="e.g. 85%"/></div>
+        <div class="fg"><label>Year of Passing</label><input type="text" id="tenth_year" placeholder="e.g. 2018"/></div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="subsection-label">12th Standard / Diploma</div>
+      <div class="form-grid">
+        <div class="fg"><label>School / College Name</label><input type="text" id="twelfth_school" placeholder="College name"/></div>
+        <div class="fg"><label>Stream</label>
+          <select id="twelfth_stream">
+            <option value="">Select stream…</option>
+            <option>Science (PCM)</option><option>Science (PCB)</option>
+            <option>Commerce</option><option>Arts</option><option>Diploma</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fg"><label>Percentage / CGPA</label><input type="text" id="twelfth_percentage" placeholder="e.g. 82%"/></div>
+        <div class="fg"><label>Year of Passing</label><input type="text" id="twelfth_year" placeholder="e.g. 2020"/></div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="subsection-label">Degree / Post Graduation</div>
+      <div class="form-grid">
+        <div class="fg"><label>College Name</label><input type="text" id="degree_college" placeholder="University / College"/></div>
+        <div class="fg"><label>Degree Name</label><input type="text" id="degree_name" placeholder="e.g. B.E, B.Tech, MCA"/></div>
+        <div class="fg"><label>Specialization</label><input type="text" id="degree_specialization" placeholder="e.g. Computer Science"/></div>
+        <div class="fg"><label>Percentage / CGPA</label><input type="text" id="degree_percentage" placeholder="e.g. 7.8 CGPA"/></div>
+        <div class="fg"><label>Year of Passing</label><input type="text" id="degree_year" placeholder="e.g. 2023 / Pursuing"/></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-prev" onclick="prevStep(2)">← Previous</button>
+        <span class="step-indicator">Step 2 of 4</span>
+        <button class="btn-next" onclick="nextStep(2)">Next: Employment <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+
+    <!-- STEP 3: EMPLOYMENT -->
+    <div id="step3" style="display:none">
+      <div class="form-section-title">Employment Details</div>
+      <div class="form-section-sub">Your current work status</div>
+
+      <div class="fg" style="margin-bottom:1.5rem">
+        <label>Current Employment Status <span class="req">*</span></label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="emp_status" value="Fresher" onclick="toggleEmpFields(false)"/><span>Fresher</span></label>
+          <label class="radio-opt"><input type="radio" name="emp_status" value="Employed" onclick="toggleEmpFields(true)"/><span>Employed</span></label>
+          <label class="radio-opt"><input type="radio" name="emp_status" value="Self-Employed" onclick="toggleEmpFields(true)"/><span>Self-Employed</span></label>
+        </div>
+      </div>
+
+      <div id="emp-fields" style="display:none">
+        <div class="form-grid">
+          <div class="fg"><label>Current Company</label><input type="text" id="current_company" placeholder="Company name"/></div>
+          <div class="fg"><label>Designation</label><input type="text" id="current_designation" placeholder="Your role/title"/></div>
+          <div class="fg"><label>Experience (Years)</label>
+            <select id="experience_years">
+              <option value="">Select…</option>
+              <option>Less than 1 year</option><option>1 year</option><option>2 years</option>
+              <option>3 years</option><option>4 years</option><option>5+ years</option>
+            </select>
+          </div>
+          <div class="fg"><label>Current CTC</label><input type="text" id="current_salary" placeholder="e.g. 4.5 LPA"/></div>
+          <div class="fg"><label>Notice Period</label>
+            <select id="notice_period">
+              <option value="">Select…</option>
+              <option>Immediate</option><option>15 days</option><option>1 month</option>
+              <option>2 months</option><option>3 months</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-prev" onclick="prevStep(3)">← Previous</button>
+        <span class="step-indicator">Step 3 of 4</span>
+        <button class="btn-next" onclick="nextStep(3)">Next: Address <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+
+    <!-- STEP 4: ADDRESS -->
+    <div id="step4" style="display:none">
+      <div class="form-section-title">Address Details</div>
+      <div class="form-section-sub">Your current and permanent address</div>
+
+      <div class="subsection-label">Current Address</div>
+      <div class="form-grid full">
+        <div class="fg"><label>Street Address <span class="req">*</span></label><textarea id="current_address" placeholder="Door no, Street, Area…"></textarea></div>
+      </div>
+      <div class="form-grid three">
+        <div class="fg"><label>City <span class="req">*</span></label><input type="text" id="current_city" placeholder="City"/></div>
+        <div class="fg"><label>State</label><input type="text" id="current_state" placeholder="State"/></div>
+        <div class="fg"><label>Pincode</label><input type="text" id="current_pincode" placeholder="600001"/></div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="toggle-row">
+        <input type="checkbox" id="same_address" onchange="copyAddress(this.checked)"/>
+        <label for="same_address">Permanent address same as current address</label>
+      </div>
+
+      <div id="permanent-fields">
+        <div class="subsection-label">Permanent Address</div>
+        <div class="form-grid full">
+          <div class="fg"><label>Street Address</label><textarea id="permanent_address" placeholder="Door no, Street, Area…"></textarea></div>
+        </div>
+        <div class="form-grid three">
+          <div class="fg"><label>City</label><input type="text" id="permanent_city" placeholder="City"/></div>
+          <div class="fg"><label>State</label><input type="text" id="permanent_state" placeholder="State"/></div>
+          <div class="fg"><label>Pincode</label><input type="text" id="permanent_pincode" placeholder="600001"/></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-prev" onclick="prevStep(4)">← Previous</button>
+        <span class="step-indicator">Step 4 of 4</span>
+        <button class="btn-next" id="submit-btn" onclick="submitAdmission()">Submit Application ✓</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="step-success" style="display:none">
+      <div class="success-card">
+        <div class="success-icon">🎉</div>
+        <h2>Application Submitted!</h2>
+        <p>Welcome to SDETAI! Your student ID is:</p>
+        <div class="student-id-box" id="display-student-id">SDET-2025-001</div>
+        <p style="color:var(--text3);font-size:0.85rem;margin-top:0.5rem">Save this ID — you'll need it to login to the student portal.</p>
+        <p style="color:var(--text3);font-size:0.85rem;margin-top:0.5rem">Our team will review your application and contact you within 24 hours.</p>
+        <a href="/student" class="btn-portal">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+          Go to Student Portal
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"><strong id="t-title">Error</strong><span id="t-msg"></span></div>
+
+<script>
+const SB_URL = 'https://vaedwpdhhwgnrzqoiqas.supabase.co';
+const SB_KEY = 'sb_publishable_6SfuRS9DrbK3fcbkgBegQg_1w4mqZbV';
+
+let currentStep = 1;
+
+function showToast(title, msg, isErr=false){
+  const t = document.getElementById('toast');
+  document.getElementById('t-title').textContent = title;
+  document.getElementById('t-msg').textContent = msg;
+  t.className = 'toast' + (isErr?' err':'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 4000);
+}
+
+function validateStep(step){
+  if(step === 1){
+    const name = document.getElementById('full_name').value.trim();
+    const dob = document.getElementById('date_of_birth').value;
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const pass = document.getElementById('password').value;
+    const course = document.getElementById('course_enrolled').value;
+    if(!name){ showToast('Required','Please enter your full name.',true); return false; }
+    if(!dob){ showToast('Required','Please enter your date of birth.',true); return false; }
+    if(!phone){ showToast('Required','Please enter your phone number.',true); return false; }
+    if(!email||!/\S+@\S+\.\S+/.test(email)){ showToast('Invalid Email','Please enter a valid email.',true); return false; }
+    if(!course){ showToast('Required','Please select a course.',true); return false; }
+    if(pass.length < 8){ showToast('Weak Password','Password must be at least 8 characters.',true); return false; }
+  }
+  if(step === 4){
+    const addr = document.getElementById('current_address').value.trim();
+    const city = document.getElementById('current_city').value.trim();
+    if(!addr){ showToast('Required','Please enter your current address.',true); return false; }
+    if(!city){ showToast('Required','Please enter your city.',true); return false; }
+  }
+  return true;
+}
+
+function nextStep(current){
+  if(!validateStep(current)) return;
+  goToStep(current+1);
+}
+
+function prevStep(current){
+  goToStep(current-1);
+}
+
+function goToStep(n){
+  document.getElementById('step'+currentStep).style.display='none';
+  document.getElementById('step'+n).style.display='block';
+
+  // Update stepper
+  for(let i=1;i<=4;i++){
+    const s = document.getElementById('s'+i);
+    const sc = document.getElementById('sc'+i);
+    s.className = 'step';
+    if(i < n){ s.classList.add('done'); sc.innerHTML='✓'; }
+    else if(i === n){ s.classList.add('active'); sc.textContent=i; }
+    else{ sc.textContent=i; }
+    if(i<4){
+      const l = document.getElementById('l'+i);
+      l.className = 'step-line' + (i < n ? ' done' : '');
+    }
+  }
+  currentStep = n;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleEmpFields(show){
+  document.getElementById('emp-fields').style.display = show ? 'block' : 'none';
+}
+
+function copyAddress(same){
+  const pf = document.getElementById('permanent-fields');
+  if(same){
+    pf.style.display='none';
+    document.getElementById('permanent_address').value = document.getElementById('current_address').value;
+    document.getElementById('permanent_city').value = document.getElementById('current_city').value;
+    document.getElementById('permanent_state').value = document.getElementById('current_state').value;
+    document.getElementById('permanent_pincode').value = document.getElementById('current_pincode').value;
+  } else {
+    pf.style.display='block';
+  }
+}
+
+async function submitAdmission(){
+  if(!validateStep(4)) return;
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const gender = document.querySelector('input[name=gender]:checked')?.value || '';
+  const empStatus = document.querySelector('input[name=emp_status]:checked')?.value || 'Fresher';
+  const sameAddr = document.getElementById('same_address').checked;
+
+  const payload = {
+    full_name: document.getElementById('full_name').value.trim(),
+    date_of_birth: document.getElementById('date_of_birth').value,
+    gender,
+    phone: document.getElementById('phone').value.trim(),
+    alternate_phone: document.getElementById('alternate_phone').value.trim(),
+    email: document.getElementById('email').value.trim().toLowerCase(),
+    password_hash: btoa(document.getElementById('password').value), // base64 for demo; use bcrypt in prod
+    course_enrolled: document.getElementById('course_enrolled').value,
+    // Education
+    tenth_school: document.getElementById('tenth_school').value.trim(),
+    tenth_percentage: document.getElementById('tenth_percentage').value.trim(),
+    tenth_year: document.getElementById('tenth_year').value.trim(),
+    twelfth_school: document.getElementById('twelfth_school').value.trim(),
+    twelfth_stream: document.getElementById('twelfth_stream').value,
+    twelfth_percentage: document.getElementById('twelfth_percentage').value.trim(),
+    twelfth_year: document.getElementById('twelfth_year').value.trim(),
+    degree_college: document.getElementById('degree_college').value.trim(),
+    degree_name: document.getElementById('degree_name').value.trim(),
+    degree_specialization: document.getElementById('degree_specialization').value.trim(),
+    degree_percentage: document.getElementById('degree_percentage').value.trim(),
+    degree_year: document.getElementById('degree_year').value.trim(),
+    // Employment
+    employment_status: empStatus,
+    current_company: document.getElementById('current_company').value.trim(),
+    current_designation: document.getElementById('current_designation').value.trim(),
+    experience_years: document.getElementById('experience_years').value,
+    current_salary: document.getElementById('current_salary').value.trim(),
+    notice_period: document.getElementById('notice_period').value,
+    // Address
+    current_address: document.getElementById('current_address').value.trim(),
+    current_city: document.getElementById('current_city').value.trim(),
+    current_state: document.getElementById('current_state').value.trim(),
+    current_pincode: document.getElementById('current_pincode').value.trim(),
+    permanent_address: sameAddr ? document.getElementById('current_address').value.trim() : document.getElementById('permanent_address').value.trim(),
+    permanent_city: sameAddr ? document.getElementById('current_city').value.trim() : document.getElementById('permanent_city').value.trim(),
+    permanent_state: sameAddr ? document.getElementById('current_state').value.trim() : document.getElementById('permanent_state').value.trim(),
+    permanent_pincode: sameAddr ? document.getElementById('current_pincode').value.trim() : document.getElementById('permanent_pincode').value.trim(),
+    same_as_current: sameAddr,
+    admission_status: 'submitted'
+  };
+
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/students`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if(res.ok || res.status === 201){
+      const data = await res.json();
+      const sid = data[0]?.student_id || 'SDET-2025-001';
+      document.getElementById('display-student-id').textContent = sid;
+      // Store in session for portal login
+      sessionStorage.setItem('sdetai_student_id', sid);
+      sessionStorage.setItem('sdetai_student_email', payload.email);
+      // Hide form, show success
+      document.getElementById('step4').style.display = 'none';
+      document.getElementById('step-success').style.display = 'block';
+    } else {
+      const err = await res.json().catch(()=>({}));
+      const msg = err?.message || err?.error || 'Submission failed';
+      if(msg.includes('duplicate') || msg.includes('unique')){
+        showToast('Email Already Registered','This email is already used. Please login instead.',true);
+      } else {
+        showToast('Error', msg, true);
+      }
+      btn.disabled = false;
+      btn.textContent = 'Submit Application ✓';
+    }
+  } catch(e) {
+    showToast('Network Error', e.message, true);
+    btn.disabled = false;
+    btn.textContent = 'Submit Application ✓';
+  }
+}
+</script>
+</body>
+</html>

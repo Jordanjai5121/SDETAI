@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SDETAI — Student Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f0f6ff;--bg2:#e4eeff;--blue1:#0ea5e9;--blue2:#0284c7;--blue3:#0369a1;
+  --indigo:#4f46e5;--text:#0f1e35;--text2:#3a5270;--text3:#7a9ab8;
+  --border:rgba(14,165,233,0.15);--border2:rgba(14,165,233,0.35);
+  --shadow:0 20px 60px rgba(14,165,233,0.15);--shadow2:0 8px 30px rgba(14,165,233,0.12);
+  --serif:'Playfair Display',Georgia,serif;--sans:'Outfit',system-ui,sans-serif;
+  --green:#10b981;--red:#ef4444;--amber:#f59e0b;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* LOGIN PAGE */
+#login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%)}
+.login-card{background:#fff;border:1px solid var(--border2);border-radius:24px;padding:3rem;width:100%;max-width:420px;box-shadow:var(--shadow)}
+.login-logo{font-family:var(--serif);font-size:1.8rem;color:var(--blue2);margin-bottom:0.25rem}
+.login-logo span{color:var(--indigo)}
+.login-sub{font-size:0.85rem;color:var(--text3);margin-bottom:2rem}
+.login-card h2{font-family:var(--serif);font-size:1.5rem;margin-bottom:1.5rem;color:var(--text)}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:1.1rem}
+.fg label{font-size:0.75rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em}
+.fg input{font-family:var(--sans);font-size:0.9rem;padding:0.75rem 1rem;border:1.5px solid rgba(14,165,233,0.2);border-radius:10px;background:var(--bg);color:var(--text);outline:none;transition:all 0.2s}
+.fg input:focus{border-color:var(--blue1);background:#fff;box-shadow:0 0 0 4px rgba(14,165,233,0.1)}
+.login-btn{width:100%;padding:0.85rem;background:linear-gradient(135deg,var(--blue1),var(--blue2));color:#fff;font-family:var(--sans);font-weight:700;font-size:0.95rem;border:none;border-radius:10px;cursor:pointer;box-shadow:0 6px 20px rgba(14,165,233,0.35);transition:all 0.2s;margin-top:0.5rem}
+.login-btn:hover{transform:translateY(-2px)}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.login-footer{text-align:center;margin-top:1.5rem;font-size:0.82rem;color:var(--text3)}
+.login-footer a{color:var(--blue2);text-decoration:none;font-weight:600}
+.login-err{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:0.6rem 0.9rem;font-size:0.82rem;color:var(--red);margin-bottom:1rem;display:none}
+
+/* PORTAL LAYOUT */
+#portal{display:none}
+.portal-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 2rem;backdrop-filter:blur(20px);background:rgba(240,246,255,0.92);border-bottom:1px solid var(--border);box-shadow:0 4px 24px rgba(14,165,233,0.08)}
+.portal-logo{font-family:var(--serif);font-size:1.3rem;color:var(--blue2)}
+.portal-logo span{color:var(--indigo)}
+.portal-user{display:flex;align-items:center;gap:10px}
+.portal-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue1),var(--indigo));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff}
+.portal-name{font-size:0.85rem;font-weight:600;color:var(--text)}
+.portal-id{font-size:0.72rem;color:var(--text3);font-family:'Courier New',monospace}
+.logout-btn{padding:0.4rem 0.9rem;border:1px solid var(--border2);border-radius:8px;background:#fff;color:var(--text2);font-family:var(--sans);font-size:0.78rem;cursor:pointer;transition:all 0.2s}
+.logout-btn:hover{background:var(--bg);color:var(--red);border-color:rgba(239,68,68,0.3)}
+
+/* SIDEBAR + MAIN */
+.portal-body{display:flex;padding-top:65px;min-height:100vh}
+.sidebar{width:220px;flex-shrink:0;padding:1.5rem 1rem;position:fixed;top:65px;left:0;bottom:0;background:#fff;border-right:1px solid var(--border);overflow-y:auto}
+.sidebar-label{font-size:0.65rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.12em;padding:0.5rem 0.75rem;margin-top:0.5rem}
+.nav-item{display:flex;align-items:center;gap:10px;padding:0.65rem 0.75rem;border-radius:10px;cursor:pointer;font-size:0.875rem;font-weight:500;color:var(--text2);transition:all 0.2s;text-decoration:none;margin-bottom:2px}
+.nav-item:hover{background:var(--bg);color:var(--blue2)}
+.nav-item.active{background:linear-gradient(135deg,rgba(14,165,233,0.1),rgba(79,70,229,0.08));color:var(--blue2);font-weight:600}
+.nav-item .icon{font-size:1rem;width:20px;text-align:center}
+.main-content{flex:1;margin-left:220px;padding:2rem}
+
+/* CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.25rem;box-shadow:0 2px 12px rgba(14,165,233,0.07)}
+.stat-val{font-size:1.8rem;font-family:var(--serif);font-weight:700;background:linear-gradient(135deg,var(--blue1),var(--blue3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-top:2px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.section-header h2{font-family:var(--serif);font-size:1.4rem;color:var(--text);letter-spacing:-0.5px}
+.page-section{display:none}
+.page-section.active{display:block}
+
+/* TABLE */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(14,165,233,0.06)}
+table{width:100%;border-collapse:collapse;font-size:0.85rem}
+th{padding:0.85rem 1rem;text-align:left;font-size:0.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;background:var(--bg);border-bottom:1px solid var(--border)}
+td{padding:0.85rem 1rem;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(14,165,233,0.02)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:0.25rem 0.7rem;border-radius:20px;font-size:0.7rem;font-weight:700;letter-spacing:0.04em}
+.badge-green{background:rgba(16,185,129,0.1);color:#059669}
+.badge-red{background:rgba(239,68,68,0.1);color:#dc2626}
+.badge-amber{background:rgba(245,158,11,0.1);color:#d97706}
+.badge-blue{background:rgba(14,165,233,0.1);color:var(--blue2)}
+.badge-gray{background:rgba(107,114,128,0.1);color:#6b7280}
+
+/* PROFILE */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.profile-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.5rem;box-shadow:0 2px 12px rgba(14,165,233,0.06)}
+.profile-card h3{font-size:0.8rem;font-weight:700;color:var(--blue1);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid var(--border)}
+.profile-row{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid rgba(14,165,233,0.06);font-size:0.85rem}
+.profile-row:last-child{border-bottom:none}
+.profile-row .key{color:var(--text3);font-weight:500}
+.profile-row .val{color:var(--text);font-weight:600;text-align:right}
+.avatar-big{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--blue1),var(--indigo));display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:#fff;margin:0 auto 1rem}
+
+/* ATTENDANCE CHART */
+.att-summary{display:flex;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.att-box{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;text-align:center;flex:1;min-width:100px}
+.att-num{font-size:1.6rem;font-weight:700;font-family:var(--serif)}
+.att-lbl{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+
+/* ASSIGNMENT SUBMIT */
+.assign-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(14,165,233,0.06)}
+.assign-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem}
+.assign-title{font-size:0.95rem;font-weight:600;color:var(--text)}
+.assign-due{font-size:0.78rem;color:var(--text3)}
+.assign-desc{font-size:0.84rem;color:var(--text2);margin-bottom:1rem;line-height:1.6}
+.assign-submit-row{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap}
+.assign-input{flex:1;min-width:200px;font-family:var(--sans);font-size:0.84rem;padding:0.6rem 0.9rem;border:1.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text);outline:none;transition:all 0.2s}
+.assign-input:focus{border-color:var(--blue1);background:#fff}
+.assign-btn{padding:0.6rem 1.2rem;background:linear-gradient(135deg,var(--blue1),var(--blue2));color:#fff;font-family:var(--sans);font-size:0.82rem;font-weight:600;border:none;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all 0.2s}
+.assign-btn:hover{transform:translateY(-1px)}
+.assign-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:3rem;color:var(--text3)}
+.empty .icon{font-size:2.5rem;margin-bottom:0.75rem}
+.empty p{font-size:0.9rem}
+
+/* LOADING */
+.loading{text-align:center;padding:2rem;color:var(--text3);font-size:0.9rem}
+.spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border2);border-top-color:var(--blue1);border-radius:50%;animation:spin 0.8s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main-content{margin-left:0}
+  .profile-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-logo">SDET<span>AI</span></div>
+    <div class="login-sub">Student Portal</div>
+    <h2>Sign in to your account</h2>
+    <div class="login-err" id="login-err">Invalid email or password. Please try again.</div>
+    <div class="fg"><label>Email Address</label><input type="email" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="fg"><label>Password</label><input type="password" id="login-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="login-btn" onclick="doLogin()" id="login-btn">Sign In →</button>
+    <div class="login-footer">
+      New student? <a href="/admission">Complete Admission Form</a>
+    </div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div id="portal">
+  <nav class="portal-nav">
+    <div class="portal-logo">SDET<span>AI</span></div>
+    <div class="portal-user">
+      <div class="portal-avatar" id="nav-avatar">ST</div>
+      <div>
+        <div class="portal-name" id="nav-name">Student</div>
+        <div class="portal-id" id="nav-id">SDET-2025-001</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="portal-body">
+    <div class="sidebar">
+      <div class="sidebar-label">Menu</div>
+      <div class="nav-item active" onclick="showSection('dashboard')"><span class="icon">🏠</span>Dashboard</div>
+      <div class="nav-item" onclick="showSection('schedule')"><span class="icon">📅</span>Class Schedule</div>
+      <div class="nav-item" onclick="showSection('attendance')"><span class="icon">✅</span>Attendance</div>
+      <div class="nav-item" onclick="showSection('assignments')"><span class="icon">📝</span>Assignments</div>
+      <div class="nav-item" onclick="showSection('profile')"><span class="icon">👤</span>My Profile</div>
+    </div>
+
+    <div class="main-content">
+
+      <!-- DASHBOARD -->
+      <div class="page-section active" id="sec-dashboard">
+        <div class="section-header"><h2>Dashboard</h2></div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-val" id="stat-classes">—</div><div class="stat-label">Total Classes</div></div>
+          <div class="stat-card"><div class="stat-val" id="stat-attended">—</div><div class="stat-label">Attended</div></div>
+          <div class="stat-card"><div class="stat-val" id="stat-att-pct">—</div><div class="stat-label">Attendance %</div></div>
+          <div class="stat-card"><div class="stat-val" id="stat-assignments">—</div><div class="stat-label">Assignments</div></div>
+        </div>
+        <div class="section-header"><h2>Upcoming Classes</h2></div>
+        <div class="table-wrap" id="upcoming-table"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+      </div>
+
+      <!-- SCHEDULE -->
+      <div class="page-section" id="sec-schedule">
+        <div class="section-header"><h2>Class Schedule</h2></div>
+        <div class="table-wrap" id="schedule-table"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+      </div>
+
+      <!-- ATTENDANCE -->
+      <div class="page-section" id="sec-attendance">
+        <div class="section-header"><h2>Attendance</h2></div>
+        <div class="att-summary">
+          <div class="att-box"><div class="att-num" id="att-total" style="color:var(--blue2)">—</div><div class="att-lbl">Total Classes</div></div>
+          <div class="att-box"><div class="att-num" id="att-present" style="color:var(--green)">—</div><div class="att-lbl">Present</div></div>
+          <div class="att-box"><div class="att-num" id="att-absent" style="color:var(--red)">—</div><div class="att-lbl">Absent</div></div>
+          <div class="att-box"><div class="att-num" id="att-pct" style="color:var(--amber)">—</div><div class="att-lbl">Percentage</div></div>
+        </div>
+        <div class="table-wrap" id="attendance-table"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+      </div>
+
+      <!-- ASSIGNMENTS -->
+      <div class="page-section" id="sec-assignments">
+        <div class="section-header"><h2>Assignments</h2></div>
+        <div id="assignments-list"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="page-section" id="sec-profile">
+        <div class="section-header"><h2>My Profile</h2></div>
+        <div class="profile-grid" id="profile-content"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://vaedwpdhhwgnrzqoiqas.supabase.co';
+const SB_KEY = 'sb_publishable_6SfuRS9DrbK3fcbkgBegQg_1w4mqZbV';
+
+let STUDENT = null;
+
+// ── HELPERS ──────────────────────────────────────
+async function sbGet(table, params=''){
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${params}`, {
+    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}
+  });
+  return r.json();
+}
+
+function fmt(dateStr){
+  if(!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+function fmtTime(t){ return t ? t.slice(0,5) : '—'; }
+
+// ── LOGIN ─────────────────────────────────────────
+async function doLogin(){
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('login-err');
+  if(!email||!pass){ err.style.display='block'; err.textContent='Please enter email and password.'; return; }
+  btn.disabled=true; btn.textContent='Signing in…'; err.style.display='none';
+
+  try {
+    const data = await sbGet('students',`email=eq.${encodeURIComponent(email)}&select=*`);
+    if(!data || data.length===0){ throw new Error('not_found'); }
+    const student = data[0];
+    // Compare base64 password (demo — use bcrypt in production)
+    const passCheck = btoa(pass);
+    if(student.password_hash !== passCheck){ throw new Error('wrong_pass'); }
+    STUDENT = student;
+    sessionStorage.setItem('sdetai_sid', student.id);
+    sessionStorage.setItem('sdetai_email', email);
+    showPortal();
+  } catch(e){
+    err.style.display='block';
+    err.textContent = e.message==='not_found' ? 'No account found with this email.' : 'Invalid email or password.';
+    btn.disabled=false; btn.textContent='Sign In →';
+  }
+}
+
+function doLogout(){
+  STUDENT=null;
+  sessionStorage.clear();
+  document.getElementById('portal').style.display='none';
+  document.getElementById('login-page').style.display='flex';
+}
+
+// ── SHOW PORTAL ───────────────────────────────────
+function showPortal(){
+  document.getElementById('login-page').style.display='none';
+  document.getElementById('portal').style.display='block';
+  // Nav
+  const initials = STUDENT.full_name?.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() || 'ST';
+  document.getElementById('nav-avatar').textContent = initials;
+  document.getElementById('nav-name').textContent = STUDENT.full_name || 'Student';
+  document.getElementById('nav-id').textContent = STUDENT.student_id || '—';
+  loadDashboard();
+}
+
+// ── SECTIONS ──────────────────────────────────────
+function showSection(name){
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if(name==='schedule') loadSchedule();
+  if(name==='attendance') loadAttendance();
+  if(name==='assignments') loadAssignments();
+  if(name==='profile') loadProfile();
+}
+
+// ── DASHBOARD ─────────────────────────────────────
+async function loadDashboard(){
+  try {
+    const schedule = await sbGet('class_schedule',`batch_name=eq.${encodeURIComponent(STUDENT.batch_name||'')}&order=scheduled_date.asc`);
+    const attendance = await sbGet('attendance',`student_id=eq.${STUDENT.id}&select=*`);
+    const assignments = await sbGet('assignments',`batch_name=eq.${encodeURIComponent(STUDENT.batch_name||'')}`);
+
+    const total = schedule?.length || 0;
+    const present = attendance?.filter(a=>a.status==='present').length || 0;
+    const pct = total > 0 ? Math.round((present/total)*100) : 0;
+
+    document.getElementById('stat-classes').textContent = total;
+    document.getElementById('stat-attended').textContent = present;
+    document.getElementById('stat-att-pct').textContent = pct+'%';
+    document.getElementById('stat-assignments').textContent = assignments?.length || 0;
+
+    // Upcoming
+    const upcoming = (schedule||[]).filter(s=>s.status==='upcoming').slice(0,5);
+    renderScheduleTable('upcoming-table', upcoming, true);
+  } catch(e){ document.getElementById('upcoming-table').innerHTML='<div class="empty"><div class="icon">📅</div><p>No upcoming classes found.</p></div>'; }
+}
+
+// ── SCHEDULE ──────────────────────────────────────
+async function loadSchedule(){
+  document.getElementById('schedule-table').innerHTML='<div class="loading"><span class="spinner"></span>Loading…</div>';
+  const data = await sbGet('class_schedule',`batch_name=eq.${encodeURIComponent(STUDENT.batch_name||'')}&order=scheduled_date.asc`);
+  renderScheduleTable('schedule-table', data||[]);
+}
+
+function renderScheduleTable(elId, rows, compact=false){
+  const el = document.getElementById(elId);
+  if(!rows.length){ el.innerHTML='<div class="empty"><div class="icon">📅</div><p>No classes scheduled yet.</p></div>'; return; }
+  const statusBadge = s => s==='upcoming'?'<span class="badge badge-blue">Upcoming</span>':s==='completed'?'<span class="badge badge-green">Completed</span>':'<span class="badge badge-red">Cancelled</span>';
+  el.innerHTML = `<table><thead><tr><th>Date</th><th>Topic</th><th>Time</th>${!compact?'<th>Course</th>':''}<th>Status</th>${!compact?'<th>Link</th>':''}</tr></thead><tbody>${
+    rows.map(r=>`<tr>
+      <td>${fmt(r.scheduled_date)}</td>
+      <td><strong style="color:var(--text)">${r.topic}</strong>${r.description?`<br><small style="color:var(--text3)">${r.description}</small>`:''}
+      </td>
+      <td style="white-space:nowrap">${fmtTime(r.start_time)} – ${fmtTime(r.end_time)}</td>
+      ${!compact?`<td>${r.course||'—'}</td>`:''}
+      <td>${statusBadge(r.status)}</td>
+      ${!compact?`<td>${r.meeting_link?`<a href="${r.meeting_link}" target="_blank" style="color:var(--blue2);font-size:0.8rem">Join →</a>`:r.recording_link?`<a href="${r.recording_link}" target="_blank" style="color:var(--green);font-size:0.8rem">Recording</a>`:'—'}</td>`:''}</tr>`
+    ).join('')
+  }</tbody></table>`;
+}
+
+// ── ATTENDANCE ────────────────────────────────────
+async function loadAttendance(){
+  document.getElementById('attendance-table').innerHTML='<div class="loading"><span class="spinner"></span>Loading…</div>';
+  const [schedule, att] = await Promise.all([
+    sbGet('class_schedule',`batch_name=eq.${encodeURIComponent(STUDENT.batch_name||'')}&order=scheduled_date.desc`),
+    sbGet('attendance',`student_id=eq.${STUDENT.id}&select=*`)
+  ]);
+  const rows = schedule||[];
+  const attMap = {};
+  (att||[]).forEach(a=>{ attMap[a.schedule_id]=a.status; });
+
+  const total = rows.length;
+  const present = Object.values(attMap).filter(v=>v==='present').length;
+  const absent = total - present;
+  const pct = total>0?Math.round((present/total)*100):0;
+
+  document.getElementById('att-total').textContent=total;
+  document.getElementById('att-present').textContent=present;
+  document.getElementById('att-absent').textContent=absent;
+  document.getElementById('att-pct').textContent=pct+'%';
+
+  if(!rows.length){ document.getElementById('attendance-table').innerHTML='<div class="empty"><div class="icon">✅</div><p>No attendance records yet.</p></div>'; return; }
+
+  document.getElementById('attendance-table').innerHTML=`<table><thead><tr><th>Date</th><th>Topic</th><th>Time</th><th>Status</th></tr></thead><tbody>${
+    rows.map(r=>{
+      const status = attMap[r.id]||'absent';
+      const badge = status==='present'?'badge-green':status==='late'?'badge-amber':'badge-red';
+      return `<tr><td>${fmt(r.scheduled_date)}</td><td>${r.topic}</td><td>${fmtTime(r.start_time)}–${fmtTime(r.end_time)}</td><td><span class="badge ${badge}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td></tr>`;
+    }).join('')
+  }</tbody></table>`;
+}
+
+// ── ASSIGNMENTS ───────────────────────────────────
+async function loadAssignments(){
+  document.getElementById('assignments-list').innerHTML='<div class="loading"><span class="spinner"></span>Loading…</div>';
+  const [assignments, submissions] = await Promise.all([
+    sbGet('assignments',`batch_name=eq.${encodeURIComponent(STUDENT.batch_name||'')}&order=due_date.asc`),
+    sbGet('assignment_submissions',`student_id=eq.${STUDENT.id}&select=*`)
+  ]);
+  const subMap={};
+  (submissions||[]).forEach(s=>{ subMap[s.assignment_id]=s; });
+
+  if(!(assignments||[]).length){ document.getElementById('assignments-list').innerHTML='<div class="empty"><div class="icon">📝</div><p>No assignments yet.</p></div>'; return; }
+
+  document.getElementById('assignments-list').innerHTML=(assignments||[]).map(a=>{
+    const sub=subMap[a.id];
+    const isSubmitted=!!sub;
+    const overdue=new Date(a.due_date)<new Date()&&!isSubmitted;
+    const badge=isSubmitted?`<span class="badge badge-green">Submitted${sub.marks_obtained!=null?' · '+sub.marks_obtained+'/'+a.total_marks:''}</span>`:overdue?`<span class="badge badge-red">Overdue</span>`:`<span class="badge badge-amber">Pending</span>`;
+    return `<div class="assign-card">
+      <div class="assign-header">
+        <div class="assign-title">${a.title}</div>
+        <div>${badge}</div>
+      </div>
+      <div class="assign-due">📅 Due: ${fmt(a.due_date)} · ${a.course} · ${a.total_marks} marks</div>
+      <div class="assign-desc">${a.description||''}</div>
+      ${!isSubmitted?`<div class="assign-submit-row">
+        <input class="assign-input" type="text" id="sub-${a.id}" placeholder="Paste GitHub link or submission URL…"/>
+        <button class="assign-btn" onclick="submitAssignment('${a.id}')">Submit →</button>
+      </div>`:`<div style="font-size:0.82rem;color:var(--green);margin-top:0.5rem">✓ Submitted${sub.feedback?` · Feedback: ${sub.feedback}`:''}</div>`}
+    </div>`;
+  }).join('');
+}
+
+async function submitAssignment(assignId){
+  const url = document.getElementById('sub-'+assignId)?.value.trim();
+  if(!url){ alert('Please paste a submission URL or GitHub link.'); return; }
+  const btn = event.currentTarget;
+  btn.disabled=true; btn.textContent='Submitting…';
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/assignment_submissions`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Prefer':'return=minimal'},
+      body:JSON.stringify({assignment_id:assignId,student_id:STUDENT.id,submission_url:url,status:'submitted'})
+    });
+    if(res.ok||res.status===201){ loadAssignments(); }
+    else { btn.disabled=false; btn.textContent='Submit →'; }
+  } catch(e){ btn.disabled=false; btn.textContent='Submit →'; }
+}
+
+// ── PROFILE ───────────────────────────────────────
+function loadProfile(){
+  const s = STUDENT;
+  const initials = s.full_name?.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()||'ST';
+  const statusColor = s.admission_status==='approved'?'badge-green':s.admission_status==='pending'?'badge-amber':'badge-blue';
+
+  document.getElementById('profile-content').innerHTML=`
+    <div class="profile-card" style="grid-column:1/-1;text-align:center">
+      <div class="avatar-big">${initials}</div>
+      <div style="font-family:var(--serif);font-size:1.4rem;margin-bottom:4px">${s.full_name||'—'}</div>
+      <div style="color:var(--text3);font-size:0.85rem;margin-bottom:8px">${s.course_enrolled||'—'}</div>
+      <span class="badge badge-blue" style="font-size:0.8rem;margin-right:6px">${s.student_id||'—'}</span>
+      <span class="badge ${statusColor}">${s.admission_status||'pending'}</span>
+    </div>
+    <div class="profile-card">
+      <h3>Personal Info</h3>
+      ${prow('Email',s.email)}${prow('Phone',s.phone)}${prow('Date of Birth',fmt(s.date_of_birth))}${prow('Gender',s.gender)}${prow('Enrolled',fmt(s.enrollment_date))}
+    </div>
+    <div class="profile-card">
+      <h3>Course Info</h3>
+      ${prow('Course',s.course_enrolled)}${prow('Batch',s.batch_name||'TBD')}${prow('Status',s.status)}${prow('Admission',s.admission_status)}
+    </div>
+    <div class="profile-card">
+      <h3>Education</h3>
+      ${prow('10th',s.tenth_school?(s.tenth_school+' ('+s.tenth_percentage+')'):'—')}
+      ${prow('12th',s.twelfth_school?(s.twelfth_school+' ('+s.twelfth_percentage+')'):'—')}
+      ${prow('Degree',s.degree_name?(s.degree_name+' — '+s.degree_college):'—')}
+    </div>
+    <div class="profile-card">
+      <h3>Employment</h3>
+      ${prow('Status',s.employment_status||'—')}${prow('Company',s.current_company||'—')}${prow('Role',s.current_designation||'—')}${prow('Experience',s.experience_years||'—')}
+    </div>
+  `;
+}
+
+function prow(k,v){ return `<div class="profile-row"><span class="key">${k}</span><span class="val">${v||'—'}</span></div>`; }
+
+// ── AUTO LOGIN if session ─────────────────────────
+(async()=>{
+  const sid = sessionStorage.getItem('sdetai_sid');
+  const email = sessionStorage.getItem('sdetai_email');
+  if(sid&&email){
+    try {
+      const data = await sbGet('students',`id=eq.${sid}&select=*`);
+      if(data&&data.length>0){ STUDENT=data[0]; showPortal(); }
+    } catch(e){}
+  }
+})();
+</script>
+</body>
+</html>
