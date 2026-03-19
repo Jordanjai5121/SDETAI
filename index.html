@@ -406,5 +406,615 @@ async function submitForm(){
 }
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'&&e.target.closest('.contact-form'))submitForm();});
 </script>
+<!-- ══ SDETAI CHATBOT WIDGET START ══ -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+#sdetai-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(26,26,46,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#sdetai-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(26,26,46,0.45); }
+#sdetai-fab svg { width: 26px; height: 26px; }
+#sdetai-fab .badge {
+  position: absolute;
+  top: -2px; right: -2px;
+  width: 18px; height: 18px;
+  background: #e63946;
+  border-radius: 50%;
+  border: 2px solid #f0f4ff;
+  font-size: 10px;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600;
+}
+
+/* Chat window */
+#sdetai-window {
+  position: fixed;
+  bottom: 102px;
+  right: 28px;
+  width: 370px;
+  height: 560px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9998;
+  transform: scale(0.85) translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), opacity 0.2s;
+}
+#sdetai-window.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Header */
+#cw-header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+#cw-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e63946, #f4a261);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+#cw-header-text { flex: 1; }
+#cw-name { font-size: 14px; font-weight: 600; color: #fff; }
+#cw-status { font-size: 11px; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 4px; }
+#cw-status::before { content:''; width:7px; height:7px; border-radius:50%; background:#4ade80; display:inline-block; }
+#cw-close {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.6); font-size: 20px; padding: 4px;
+  line-height: 1; transition: color 0.15s;
+}
+#cw-close:hover { color: #fff; }
+
+/* Quick chips */
+#cw-chips {
+  padding: 10px 14px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex-shrink: 0;
+  background: #f8f9ff;
+  border-bottom: 1px solid #eef0f8;
+}
+.chip {
+  font-size: 11px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 1px solid #dde3ff;
+  background: #fff;
+  color: #1a1a2e;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.chip:hover { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
+
+/* Messages */
+#cw-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+#cw-messages::-webkit-scrollbar { width: 3px; }
+#cw-messages::-webkit-scrollbar-thumb { background: #dde3ff; border-radius: 2px; }
+
+.cw-msg { display: flex; flex-direction: column; max-width: 88%; }
+.cw-msg.bot { align-self: flex-start; }
+.cw-msg.user { align-self: flex-end; align-items: flex-end; }
+
+.cw-bubble {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.cw-msg.bot .cw-bubble {
+  background: #f4f5ff;
+  color: #1a1a2e;
+  border-bottom-left-radius: 4px;
+  border: 1px solid #eef0f8;
+}
+.cw-msg.user .cw-bubble {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.cw-time {
+  font-size: 10px;
+  color: #aab0c8;
+  margin-top: 3px;
+  padding: 0 4px;
+}
+
+/* Typing indicator */
+.typing-dots {
+  display: flex; gap: 4px; align-items: center;
+  padding: 12px 14px;
+  background: #f4f5ff;
+  border-radius: 16px;
+  border-bottom-left-radius: 4px;
+  border: 1px solid #eef0f8;
+  width: fit-content;
+}
+.typing-dots span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #aab0c8;
+  animation: tdot 1.2s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes tdot { 0%,60%,100%{opacity:0.3;transform:scale(0.8)} 30%{opacity:1;transform:scale(1.1)} }
+
+/* Input */
+#cw-input-row {
+  padding: 10px 12px;
+  border-top: 1px solid #eef0f8;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: #fff;
+  flex-shrink: 0;
+}
+#cw-input {
+  flex: 1;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  padding: 9px 13px;
+  border: 1px solid #dde3ff;
+  border-radius: 22px;
+  outline: none;
+  color: #1a1a2e;
+  background: #f8f9ff;
+  transition: border-color 0.2s;
+}
+#cw-input:focus { border-color: #1a1a2e; background: #fff; }
+#cw-input::placeholder { color: #aab0c8; }
+#cw-send {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+#cw-send:hover { transform: scale(1.08); }
+#cw-send svg { width: 16px; height: 16px; fill: #fff; }
+
+/* ── KNOWLEDGE BASE ───────────────────────── */
+</style>
+
+<button id="sdetai-fab" onclick="toggleChat()">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="white"/>
+    <circle cx="8" cy="10" r="1.2" fill="#1a1a2e"/>
+    <circle cx="12" cy="10" r="1.2" fill="#1a1a2e"/>
+    <circle cx="16" cy="10" r="1.2" fill="#1a1a2e"/>
+  </svg>
+  <div class="badge">1</div>
+</button>
+
+<div id="sdetai-window">
+  <div id="cw-header">
+    <div id="cw-avatar">🤖</div>
+    <div id="cw-header-text">
+      <div id="cw-name">SDETAI Assistant</div>
+      <div id="cw-status">Always online</div>
+    </div>
+    <button id="cw-close" onclick="toggleChat()">×</button>
+  </div>
+
+  <div id="cw-chips">
+    <div class="chip" onclick="quickAsk('courses')">📚 Courses</div>
+    <div class="chip" onclick="quickAsk('fees')">💰 Fees</div>
+    <div class="chip" onclick="quickAsk('placement')">💼 Placement</div>
+    <div class="chip" onclick="quickAsk('duration')">⏱ Duration</div>
+    <div class="chip" onclick="quickAsk('contact')">📞 Contact</div>
+    <div class="chip" onclick="quickAsk('enroll')">✅ Enroll</div>
+  </div>
+
+  <div id="cw-messages"></div>
+
+  <div id="cw-input-row">
+    <input id="cw-input" type="text" placeholder="Type a message... / தமிழிலும் கேளு" />
+    <button id="cw-send" onclick="sendMsg()">
+      <svg viewBox="0 0 24 24"><path d="M2 21L23 12 2 3v7l15 2-15 2v7z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+// ══ KNOWLEDGE BASE ══════════════════════════════
+const KB = {
+  // ── High-priority exact topics first ──
+  hello: {
+    keywords: ['hi','hello','hey','வணக்கம்','vanakkam','hai','helo','good morning','good evening','நம்ஸ்தே'],
+    response: `வணக்கம்! 👋
+
+Naan SDETAI Assistant — உங்களுக்கு help பண்ண ready-ஆ இருக்கேன்!
+
+Courses, fees, placement, enrollment — எதுவும் கேளுங்க.
+
+கீழே இருக்கற buttons-ஐ click பண்ணலாம் அல்லது directly type பண்ணலாம்! 😊`
+  },
+  contact: {
+    keywords: ['contact','reach','email','phone','whatsapp','number','address','location','எங்கே','தொடர்பு','details','கொடுங்க'],
+    response: `📞 Contact SDETAI
+
+👨‍💼 Admin Team
+   ✉ admin@sdetai.in
+
+🎧 Helpdesk
+   ✉ helpdesk@sdetai.in
+
+📍 Location: Orapakkam, Chennai
+
+Response time: within 24 hours`
+  },
+  duration: {
+    keywords: ['duration','how long','எவ்வளவு','எத்தனை மாதம்','period','course length','கால அளவு','மாதம்','weeks','நாள்'],
+    response: `⏱ Course Duration
+
+Course-ஐ பொறுத்து duration மாறும்:
+
+• Core Tracks: 2–3 months
+• Advanced Tracks: 3–4 months
+• Full Program: 5–6 months
+
+Weekend & weekday batches available!
+
+Exact schedule: admin@sdetai.in`
+  },
+  fees: {
+    keywords: ['fee','fees','cost','price','கட்டணம்','பணம்','how much','pricing','charges','emi','installment'],
+    response: `💰 Course Fees
+
+Fee details-க்கு எங்களை reach பண்ணுங்க:
+
+📧 admin@sdetai.in
+📧 helpdesk@sdetai.in
+
+நாங்கள் 24 hours-ல் reply பண்றோம்.
+
+Instalment options பத்தியும் கேட்கலாம்!`
+  },
+  placement: {
+    keywords: ['placement','job','career','hire','placed','salary','company','வேலை','job guarantee','நிறுவனம்'],
+    response: `💼 Placement Support
+
+✅ 95% Placement Rate
+✅ 200+ graduates placed
+
+நாங்கள் என்ன கொடுக்கிறோம்:
+• Resume review & optimization
+• Mock interviews (technical + HR)
+• LinkedIn profile optimization
+• Direct referrals to companies
+
+Alumni companies: Bangalore product cos, Chennai MNCs, Hyderabad fintech teams
+
+Questions: admin@sdetai.in`
+  },
+  enroll: {
+    keywords: ['enroll','register','join','admission','how to join','signup','sign up','இணைய','சேர','enrollment','apply'],
+    response: `✅ Enrollment Process
+
+3 simple steps:
+
+1️⃣ Email us to get started
+   📧 admin@sdetai.in
+
+2️⃣ Free counselling call — course select பண்ணலாம்
+
+3️⃣ Registration confirm + batch allot
+
+We respond within 24 hours! 🚀`
+  },
+  batch: {
+    keywords: ['batch','next batch','start','schedule','weekend','weekday','timing','class','classes','எப்போது'],
+    response: `📅 Batch Schedule
+
+Next batch details-க்கு:
+
+📧 admin@sdetai.in
+📧 helpdesk@sdetai.in
+
+• Weekend batches (Sat & Sun)
+• Weekday batches (evenings)
+• Max 15 students per batch
+
+Early enrollment recommended!`
+  },
+  tamil: {
+    keywords: ['tamil','தமிழ்','tamil medium','language','மொழி'],
+    response: `🗣 Tamil Medium Support
+
+ஆமா! SDETAI-ல Tamil மற்றும் English இரண்டிலும் கற்றுக்கொடுக்கிறோம்.
+
+தமிழ் medium-ல comfortable-ஆ கற்கலாம் — language barrier இல்லை! 💪
+
+Enroll: admin@sdetai.in`
+  },
+  manual: {
+    keywords: ['manual','manual testing','manual tester','switch','transition','மானுவல்'],
+    response: `👋 Manual Tester-ஆ இருக்கீங்களா?
+
+Worry வேண்டாம்! பல students manual background-லயே வந்து automation கத்துக்கிட்டாங்க.
+
+Recommended path:
+1. Selenium & Java (basics)
+2. API Testing
+3. AI-Powered QA
+
+Free counselling: admin@sdetai.in`
+  },
+  about: {
+    keywords: ['about','who are','what is sdetai','institute','பத்தி சொல்லுங்க'],
+    response: `🏫 SDETAI பத்தி
+
+Software Development Engineer in Test AI Institute
+
+📍 Chennai's #1 SDET Training Institute
+
+✅ 200+ Graduates
+✅ 95% Placement Rate
+✅ 15+ Tools Covered
+✅ Industry Mentors (10+ years exp)
+✅ Max 15 students/batch
+✅ Lifetime access to materials
+✅ Tamil & English medium
+
+🌐 sdetai.in`
+  },
+  // ── Specific course topics ──
+  selenium: {
+    keywords: ['selenium','java','testng','maven','page object','webdriver'],
+    response: `🤖 Selenium & Java Automation
+
+என்ன கற்றுக்கொள்வீர்கள்:
+• Selenium WebDriver (full)
+• TestNG framework
+• Maven build tool
+• Page Object Model
+• End-to-end frameworks scratch-ல build பண்றோம்
+
+🏷 Track: Core Track
+👥 Batch size: Max 15 students
+
+Enroll: admin@sdetai.in`
+  },
+  playwright: {
+    keywords: ['playwright','cypress','component testing'],
+    response: `🧪 Playwright & Cypress
+
+என்ன கற்றுக்கொள்வீர்கள்:
+• Playwright (Node.js)
+• Cypress component testing
+• API testing integration
+• CI/CD pipeline integration
+
+🏷 Track: Advanced
+
+More details: admin@sdetai.in`
+  },
+  api: {
+    keywords: ['api testing','postman','restassured','rest api','contract testing','api'],
+    response: `⚡ API Testing — Postman & RestAssured
+
+என்ன கற்றுக்கொள்வீர்கள்:
+• REST API concepts
+• Postman collections & automation
+• RestAssured Java library
+• Contract testing
+• CI integration
+
+🏷 Track: Core Track
+
+Enroll: admin@sdetai.in`
+  },
+  ai: {
+    keywords: ['ai testing','copilot','chatgpt','self-healing','ai powered','ai-powered','artificial intelligence'],
+    response: `🧠 AI-Powered QA Automation
+
+என்ன கற்றுக்கொள்வீர்கள்:
+• GitHub Copilot for test writing
+• ChatGPT prompts for automation
+• Self-healing test frameworks
+• AI tools to boost productivity 10x
+
+🏷 Track: AI Track — most popular now!
+
+More info: admin@sdetai.in`
+  },
+  performance: {
+    keywords: ['performance','jmeter','load testing','stress test','spike test'],
+    response: `📊 Performance Testing — JMeter
+
+என்ன கற்றுக்கொள்வீர்கள்:
+• JMeter setup & scripting
+• Load, stress & spike testing
+• Bottleneck analysis
+• CI pipeline integration
+
+🏷 Track: Specialisation
+
+Details: admin@sdetai.in`
+  },
+  devops: {
+    keywords: ['devops','jenkins','docker','github actions','cloud deployment','cicd','ci/cd'],
+    response: `🔁 DevOps & CI/CD for Testers
+
+ென்ன கற்றுக்கொள்வீர்கள்:
+• Jenkins pipelines
+• GitHub Actions workflows
+• Docker basics
+• Cloud deployment basics
+
+🏷 Track: Advanced
+
+Details: admin@sdetai.in`
+  },
+  // ── Generic course list — LAST so it doesn't swallow specific queries ──
+  courses: {
+    keywords: ['courses','படிப்பு','என்ன படிக்கலாம்','what courses','available courses','program','கற்கலாம்','all courses','list'],
+    response: `📚 SDETAI-ல கீழ்கண்ட courses இருக்கு:
+
+🤖 Selenium & Java Automation
+   (Core Track — beginners-க்கு best)
+
+🧪 Playwright & Cypress
+   (Modern automation — advanced)
+
+⚡ API Testing — Postman & RestAssured
+   (Core Track)
+
+🧠 AI-Powered QA Automation
+   (Copilot, ChatGPT tools use பண்றது)
+
+📊 Performance Testing — JMeter
+   (Specialisation)
+
+🔁 DevOps & CI/CD for Testers
+   (Jenkins, Docker — advanced)
+
+எந்த course பத்தி more info வேணும்?`
+  }
+};
+
+const FALLBACK = `Hmm, அந்த question-க்கு exact answer என்கிட்ட இல்லை 🙏\n\nஆனா நம்ம team உடனே help பண்ணுவாங்க:\n\n📧 admin@sdetai.in\n📧 helpdesk@sdetai.in\n\nOr website form: sdetai.in/#contact\n\nResponse: within 24 hours! 😊`;
+
+// ══ ENGINE ══════════════════════════════════════
+function findResponse(input) {
+  const txt = input.toLowerCase().trim();
+  for (const [, data] of Object.entries(KB)) {
+    if (data.keywords.some(kw => txt.includes(kw))) {
+      return data.response;
+    }
+  }
+  return FALLBACK;
+}
+
+// ══ UI ══════════════════════════════════════════
+let isOpen = false;
+
+function toggleChat() {
+  isOpen = !isOpen;
+  const win = document.getElementById('sdetai-window');
+  const badge = document.querySelector('#sdetai-fab .badge');
+  win.classList.toggle('open', isOpen);
+  if (isOpen) {
+    badge.style.display = 'none';
+    if (document.getElementById('cw-messages').children.length === 0) {
+      setTimeout(() => botTyping(`வணக்கம்! 👋 நான் SDETAI Assistant!\n\nCourses, fees, placement, enrollment — எதுவும் கேளுங்க.\n\nதமிழிலும் கேட்கலாம், English-லயும் கேட்கலாம்! 😊`), 400);
+    }
+    setTimeout(() => document.getElementById('cw-input').focus(), 300);
+  }
+}
+
+function getTime() {
+  return new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+}
+
+function addMsg(role, text) {
+  const msgs = document.getElementById('cw-messages');
+  const wrap = document.createElement('div');
+  wrap.className = `cw-msg ${role}`;
+  const bubble = document.createElement('div');
+  bubble.className = 'cw-bubble';
+  bubble.textContent = text;
+  const time = document.createElement('div');
+  time.className = 'cw-time';
+  time.textContent = getTime();
+  wrap.appendChild(bubble);
+  wrap.appendChild(time);
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function botTyping(text) {
+  const msgs = document.getElementById('cw-messages');
+  const typingWrap = document.createElement('div');
+  typingWrap.className = 'cw-msg bot';
+  typingWrap.id = '_typing';
+  const dots = document.createElement('div');
+  dots.className = 'typing-dots';
+  dots.innerHTML = '<span></span><span></span><span></span>';
+  typingWrap.appendChild(dots);
+  msgs.appendChild(typingWrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    const el = document.getElementById('_typing');
+    if (el) el.remove();
+    addMsg('bot', text);
+  }, 700 + Math.random() * 400);
+}
+
+function quickAsk(topic) {
+  const labels = {
+    courses: 'What courses are available?',
+    fees: 'Course fees என்ன?',
+    placement: 'Placement support பத்தி சொல்லுங்க',
+    duration: 'Course duration எவ்வளவு?',
+    contact: 'Contact details கொடுங்க',
+    enroll: 'How to enroll?'
+  };
+  const input = document.getElementById('cw-input');
+  input.value = labels[topic] || topic;
+  sendMsg();
+}
+
+function sendMsg() {
+  const input = document.getElementById('cw-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMsg('user', text);
+  const reply = findResponse(text);
+  setTimeout(() => botTyping(reply), 150);
+}
+
+document.getElementById('cw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendMsg();
+});
+</script>
+<!-- ══ SDETAI CHATBOT WIDGET END ══ -->
 </body>
 </html>
