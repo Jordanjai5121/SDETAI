@@ -162,25 +162,6 @@ td{padding:0.85rem 1rem;vertical-align:middle}
   .tabs{flex-wrap:wrap}
   .main{padding:1rem}
 }
-
-/* ── ATTENDANCE CHECKLIST ── */
-.att-mode-btns{display:flex;gap:0.5rem;margin-bottom:1.25rem}
-.att-mode-btn{padding:0.4rem 1rem;border-radius:8px;font-family:var(--sans);font-size:0.82rem;font-weight:600;cursor:pointer;border:1px solid rgba(14,165,233,0.2);background:rgba(14,165,233,0.06);color:var(--blue2);transition:all 0.15s}
-.att-mode-btn.active{background:linear-gradient(135deg,var(--blue1),var(--blue2));color:#fff;border-color:transparent}
-.checklist-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow)}
-.checklist-table{width:100%;border-collapse:collapse;min-width:600px;font-size:0.83rem}
-.checklist-table .topic-header{background:#5b8c5a;color:#fff;text-align:center;font-weight:700;font-size:0.82rem;letter-spacing:0.04em;padding:0.6rem 0.5rem}
-.checklist-table .student-header{background:#4a7cb5;color:#fff;font-weight:700;font-size:0.82rem;padding:0.7rem 1rem;white-space:nowrap}
-.checklist-table .col-header{background:#f0f4f0;text-align:center;font-weight:600;font-size:0.76rem;color:#3a5270;padding:0.55rem 0.5rem;border-bottom:2px solid #c8d8c8;border-right:1px solid #dde8dd}
-.checklist-table .name-cell{padding:0.65rem 1rem;font-weight:600;font-size:0.84rem;color:var(--text);background:#fff;border-bottom:1px solid var(--border);border-right:2px solid #4a7cb5;white-space:nowrap;min-width:160px}
-.checklist-table .check-cell{text-align:center;padding:0.5rem;border-bottom:1px solid var(--border);border-right:1px solid #e8f0e8;background:#fff}
-.checklist-table .check-cell:last-child{border-right:none}
-.checklist-table tr:hover .name-cell,.checklist-table tr:hover .check-cell{background:#f8fbff}
-.att-checkbox{width:18px;height:18px;accent-color:var(--green);cursor:pointer;border-radius:3px}
-.att-checkbox:checked+span{color:var(--green)}
-.topic-group-header td{background:#5b8c5a!important;color:#fff!important;text-align:center;font-weight:700;font-size:0.8rem;letter-spacing:0.06em;padding:0.45rem;text-transform:uppercase}
-.checklist-legend{display:flex;gap:1rem;align-items:center;margin-top:0.75rem;font-size:0.78rem;color:var(--text3)}
-.legend-item{display:flex;align-items:center;gap:4px}
 </style>
 </head>
 <body>
@@ -320,75 +301,26 @@ td{padding:0.85rem 1rem;vertical-align:middle}
 
     <!-- ══ ATTENDANCE ══ -->
     <div id="tab-attendance" class="tab-page">
-
-      <!-- Controls -->
       <div class="form-panel">
-        <div class="form-panel-head">✅ Attendance Checklist</div>
+        <div class="form-panel-head">✅ Mark Attendance</div>
         <div class="form-panel-body">
+          <div class="fg"><label>Select Class *</label>
+            <select id="att-class"><option value="">— Select a class —</option></select>
+          </div>
           <div class="fg"><label>Batch *</label>
-            <select id="att-batch" onchange="onBatchChange()">
+            <select id="att-batch" onchange="loadAttSt()">
               <option value="">— Select batch —</option>
             </select>
           </div>
-          <div class="fg"><label>View Mode</label>
-            <div class="att-mode-btns">
-              <button class="att-mode-btn active" id="mode-checklist" onclick="switchAttMode('checklist',this)">📋 Topic Checklist</button>
-              <button class="att-mode-btn" id="mode-class" onclick="switchAttMode('class',this)">📅 By Class</button>
-            </div>
-          </div>
         </div>
       </div>
-
-      <!-- CHECKLIST MODE -->
-      <div id="att-checklist-panel">
-        <div class="tbl-wrap">
-          <div class="tbl-head" style="flex-wrap:wrap;gap:0.75rem">
-            <h3>Topic-wise Attendance Checklist</h3>
-            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
-              <select id="cl-course" onchange="renderChecklist()" style="font-family:var(--sans);font-size:0.8rem;padding:0.35rem 0.7rem;border:1px solid var(--border2);border-radius:7px;background:var(--bg);color:var(--text);outline:none">
-                <option value="java">Selenium & Java Automation</option>
-                <option value="playwright">Playwright & Cypress</option>
-                <option value="api">API Testing</option>
-                <option value="ai">AI-Powered QA</option>
-                <option value="perf">Performance Testing</option>
-                <option value="devops">DevOps & CI/CD</option>
-              </select>
-              <button class="btn-refresh" onclick="saveChecklist()" style="background:linear-gradient(135deg,var(--green),#059669);color:#fff;border-color:transparent">💾 Save</button>
-              <button class="btn-export" onclick="exportChecklist()">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                Export
-              </button>
-            </div>
-          </div>
-          <div id="checklist-body" style="padding:2rem;text-align:center;color:var(--text3)">Select a batch to view checklist.</div>
-          <div class="checklist-legend" style="padding:0.75rem 1.25rem">
-            <div class="legend-item"><input type="checkbox" checked disabled style="accent-color:var(--green)"/> Completed</div>
-            <div class="legend-item"><input type="checkbox" disabled/> Not completed</div>
-          </div>
+      <div class="tbl-wrap">
+        <div class="tbl-head"><h3>Students</h3></div>
+        <div id="att-list" style="padding:2rem;text-align:center;color:var(--text3);font-size:0.9rem">Select a batch above to load students.</div>
+        <div id="att-save-row" style="display:none;padding:1rem 1.5rem;border-top:1px solid var(--border)">
+          <button class="btn-push" onclick="saveAtt()">💾 Save Attendance</button>
         </div>
       </div>
-
-      <!-- CLASS MODE -->
-      <div id="att-class-panel" style="display:none">
-        <div class="form-panel" style="margin-bottom:1rem">
-          <div class="form-panel-body" style="padding:1rem 1.5rem">
-            <div class="fg"><label>Select Class *</label>
-              <select id="att-class"><option value="">— Select a class —</option></select>
-            </div>
-            <div class="fg" style="align-self:end">
-              <button class="btn-push" style="width:100%;justify-content:center" onclick="loadAttSt()">Load Students</button>
-            </div>
-          </div>
-        </div>
-        <div class="tbl-wrap">
-          <div class="tbl-head"><h3>Mark Attendance</h3></div>
-          <div id="att-list" style="padding:2rem;text-align:center;color:var(--text3);font-size:0.9rem">Select a class and batch, then click Load Students.</div>
-          <div id="att-save-row" style="display:none;padding:1rem 1.5rem;border-top:1px solid var(--border)">
-            <button class="btn-push" onclick="saveAtt()">💾 Save Attendance</button>
-          </div>
-        </div>
-      </div>
-
     </div>
 
   </div>
@@ -479,7 +411,7 @@ function showTab(name, el){
   if(name==='admissions') loadAdm();
   if(name==='students')   loadSt();
   if(name==='schedule')   loadClasses();
-  if(name==='attendance') { loadBatchSel(); }
+  if(name==='attendance') { loadClassSel(); loadBatchSel(); }
 }
 
 // ── UTILS ─────────────────────────────────────────
@@ -728,132 +660,11 @@ async function deleteCls(id){
 }
 
 // ══ ATTENDANCE ════════════════════════════════════
-let attSts = [];
-let attMode = 'checklist';
-let checklistStudents = [];
+let attSts=[];
 
-// Topic definitions per course
-const COURSE_TOPICS = {
-  java:       {label:'Selenium & Java Automation', group:'Java Topics',      topics:['Basics','OOP','Collections','Exception Handling','Threads','Projects']},
-  playwright: {label:'Playwright & Cypress',        group:'Playwright Topics',topics:['Setup','Selectors','Page Actions','API Testing','CI/CD','Projects']},
-  api:        {label:'API Testing',                 group:'API Topics',       topics:['HTTP Basics','Postman','RestAssured','Auth','Contract Testing','Projects']},
-  ai:         {label:'AI-Powered QA',               group:'AI Topics',        topics:['Copilot Intro','Prompt Engineering','Self-Healing','AI Tools','ChatGPT','Projects']},
-  perf:       {label:'Performance Testing',          group:'JMeter Topics',    topics:['JMeter Setup','Test Plans','Load Tests','Stress Tests','Reports','Projects']},
-  devops:     {label:'DevOps & CI/CD',              group:'DevOps Topics',    topics:['Jenkins','GitHub Actions','Docker','Cloud Deploy','Pipelines','Projects']}
-};
-
-function switchAttMode(mode, el){
-  attMode = mode;
-  document.querySelectorAll('.att-mode-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('att-checklist-panel').style.display = mode==='checklist'?'block':'none';
-  document.getElementById('att-class-panel').style.display = mode==='class'?'block':'none';
-  if(mode==='checklist') renderChecklist();
-  if(mode==='class') loadClassSel();
-}
-
-async function loadBatchSel(){
-  const data=await sbGet('students','admission_status=eq.approved&select=batch_name')||[];
-  const batches=[...new Set(data.map(s=>s.batch_name).filter(Boolean))];
-  const sel=document.getElementById('att-batch');
-  sel.innerHTML='<option value="">— Select batch —</option>';
-  batches.forEach(b=>{ const o=document.createElement('option');o.value=b;o.textContent=b;sel.appendChild(o); });
-}
-
-async function onBatchChange(){
-  const batch=document.getElementById('att-batch').value;
-  if(!batch) return;
-  checklistStudents = await sbGet('students',`batch_name=eq.${encodeURIComponent(batch)}&admission_status=eq.approved&select=id,full_name,student_id`)||[];
-  if(attMode==='checklist') renderChecklist();
-}
-
-// ── CHECKLIST MODE ────────────────────────────────
-let checklistData = {}; // { studentId: { topic: true/false } }
-
-async function renderChecklist(){
-  const batch = document.getElementById('att-batch').value;
-  const courseKey = document.getElementById('cl-course').value;
-  const course = COURSE_TOPICS[courseKey];
-  const el = document.getElementById('checklist-body');
-
-  if(!batch){ el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text3)">Select a batch to view checklist.</div>'; return; }
-  if(!checklistStudents.length){ el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text3)">No approved students in this batch.</div>'; return; }
-
-  // Load saved checklist from localStorage (keyed by batch+course)
-  const storeKey = `sdetai_checklist_${batch}_${courseKey}`;
-  checklistData = JSON.parse(localStorage.getItem(storeKey)||'{}');
-
-  const topics = course.topics;
-  el.innerHTML = `
-    <div class="checklist-wrap">
-      <table class="checklist-table">
-        <thead>
-          <tr>
-            <td class="student-header" rowspan="2">Student Name</td>
-            <td class="topic-header" colspan="${topics.length}">${course.group}</td>
-          </tr>
-          <tr>
-            ${topics.map(t=>`<td class="col-header">${t}</td>`).join('')}
-          </tr>
-        </thead>
-        <tbody>
-          ${checklistStudents.map(s=>{
-            const sData = checklistData[s.id]||{};
-            return `<tr>
-              <td class="name-cell">${esc(s.full_name)}<br><span style="font-size:0.68rem;color:var(--text3);font-family:monospace">${esc(s.student_id||'')}</span></td>
-              ${topics.map(t=>`<td class="check-cell">
-                <input type="checkbox" class="att-checkbox" id="ck-${s.id}-${t.replace(/\s+/g,'_')}"
-                  ${sData[t]?'checked':''} onchange="onCheckChange('${s.id}','${t}',this.checked,'${storeKey}')"/>
-              </td>`).join('')}
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
-    </div>`;
-}
-
-function onCheckChange(studentId, topic, checked, storeKey){
-  if(!checklistData[studentId]) checklistData[studentId]={};
-  checklistData[studentId][topic] = checked;
-  // Auto-save to localStorage
-  localStorage.setItem(storeKey, JSON.stringify(checklistData));
-}
-
-function saveChecklist(){
-  const batch=document.getElementById('att-batch').value;
-  const courseKey=document.getElementById('cl-course').value;
-  if(!batch){ toast('Error','Select a batch first!','error'); return; }
-  const storeKey=`sdetai_checklist_${batch}_${courseKey}`;
-  localStorage.setItem(storeKey, JSON.stringify(checklistData));
-  toast('Saved!','Checklist saved locally. ✅','success');
-}
-
-function exportChecklist(){
-  const batch=document.getElementById('att-batch').value;
-  const courseKey=document.getElementById('cl-course').value;
-  const course=COURSE_TOPICS[courseKey];
-  if(!batch||!checklistStudents.length){ toast('Error','No data to export.','error'); return; }
-  const topics=course.topics;
-  const headers=['Student Name','Student ID',...topics];
-  const rows=checklistStudents.map(s=>{
-    const d=checklistData[s.id]||{};
-    return [`"${s.full_name}"`,`"${s.student_id||''}"`,
-      ...topics.map(t=>d[t]?'✓':'')].join(',');
-  });
-  const csv=[headers.join(','),...rows].join('
-');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download=`attendance_checklist_${batch}_${courseKey}_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  toast('Exported!','Checklist downloaded as CSV.','success');
-}
-
-// ── CLASS MODE ────────────────────────────────────
 async function loadClassSel(){
   const data=await sbGet('class_schedule','order=scheduled_date.desc&limit=40')||[];
   const sel=document.getElementById('att-class');
-  if(!sel) return;
   sel.innerHTML='<option value="">— Select a class —</option>';
   data.forEach(c=>{
     const o=document.createElement('option'); o.value=c.id;
@@ -861,16 +672,22 @@ async function loadClassSel(){
     sel.appendChild(o);
   });
 }
-
+async function loadBatchSel(){
+  const data=await sbGet('students','admission_status=eq.approved&select=batch_name')||[];
+  const batches=[...new Set(data.map(s=>s.batch_name).filter(Boolean))];
+  const sel=document.getElementById('att-batch');
+  sel.innerHTML='<option value="">— Select batch —</option>';
+  batches.forEach(b=>{ const o=document.createElement('option');o.value=b;o.textContent=b;sel.appendChild(o); });
+}
 async function loadAttSt(){
-  const batch=document.getElementById('att-batch').value;
+  const batch=document.getElementById('att-batch').value; if(!batch) return;
   const classId=document.getElementById('att-class').value;
-  if(!batch){ toast('Error','Select a batch first!','error'); return; }
-  if(!classId){ toast('Error','Select a class first!','error'); return; }
   attSts=await sbGet('students',`batch_name=eq.${encodeURIComponent(batch)}&admission_status=eq.approved&select=id,full_name,student_id,email`)||[];
   let existing={};
-  const att=await sbGet('attendance',`schedule_id=eq.${classId}&select=student_id,status`)||[];
-  att.forEach(a=>{ existing[a.student_id]=a.status; });
+  if(classId){
+    const att=await sbGet('attendance',`schedule_id=eq.${classId}&select=student_id,status`)||[];
+    att.forEach(a=>{ existing[a.student_id]=a.status; });
+  }
   const el=document.getElementById('att-list');
   if(!attSts.length){ el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text3)">No approved students in this batch.</div>'; return; }
   el.innerHTML=`<div class="tbl-scroll"><table>
@@ -889,7 +706,6 @@ async function loadAttSt(){
     }).join('')}</tbody></table></div>`;
   document.getElementById('att-save-row').style.display='block';
 }
-
 async function saveAtt(){
   const classId=document.getElementById('att-class').value;
   if(!classId){ toast('Error','Please select a class first!','error'); return; }
